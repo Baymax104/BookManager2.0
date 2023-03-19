@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="vm"
+                type="com.baymax104.bookmanager20.viewModel.FinishViewModel" />
+        <variable
+                name="adapter"
+                type="com.baymax104.bookmanager20.adapter.FinishAdapter" />
+    </data>
+
+    <com.drake.statelayout.StateLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:empty_layout="@layout/layout_empty"
+            android:id="@+id/state">
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/book_list"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:listitem="@layout/item_finish_book"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                recycler_data="@{vm.finishBooks}"
+                recycler_adapter="@{adapter}"/>
+
+    </com.drake.statelayout.StateLayout>
+</layout>
