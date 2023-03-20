@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.view
+package com.baymax104.bookmanager20.view.process
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.baymax104.bookmanager20.adapter.ProcessAdapter
 import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
 import com.baymax104.bookmanager20.viewModel.ProcessViewModel
+import com.blankj.utilcode.util.ToastUtils
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.lxj.xpopup.XPopup
 
 /**
  *@Description
@@ -46,6 +49,17 @@ class ProcessFragment : Fragment() {
             if (it.isEmpty()) {
                 binding.state.showEmpty()
             }
+        }
+
+        LiveEventBus.get("CaptureActivity-getResult", String::class.java)
+            .observe(viewLifecycleOwner) {
+                ToastUtils.showShort(it)
+            }
+
+        binding.add.setOnClickListener {
+            XPopup.Builder(requireActivity())
+                .asCustom(AddBookDialog(requireActivity()))
+                .show()
         }
     }
 }

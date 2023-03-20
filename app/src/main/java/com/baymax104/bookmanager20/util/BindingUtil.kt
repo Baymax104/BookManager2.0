@@ -1,6 +1,7 @@
 package com.baymax104.bookmanager20.util
 
 import android.annotation.SuppressLint
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
@@ -45,6 +46,17 @@ object BindingUtil {
         val start = book.startTime?.let { dateFormatter.format(it) }
         val end = book.endTime?.let { dateFormatter.format(it) }
         text = "$start——$end"
+    }
+
+    @JvmStatic
+    @BindingAdapter("book_progress")
+    fun ProgressBar.setBookProgress(book: Book) {
+        val progress = if (book.progress >= book.page) {
+            100
+        } else {
+            (book.progress * 1.0 / (if (book.page == 0) 1 else book.page) * 100).toInt()
+        }
+        setProgress(progress, true)
     }
 
     @JvmStatic

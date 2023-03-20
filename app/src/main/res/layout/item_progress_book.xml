@@ -65,7 +65,7 @@
                                 android:textSize="13sp"
                                 android:maxLines="1"
                                 android:maxEms="10"
-                                android:text="@{book.author}"
+                                android:text="@{book.author ?? `佚名`}"
                                 android:ellipsize="end" />
 
                         <TextView
@@ -99,9 +99,9 @@
                         android:layout_weight="9"
                         android:layout_gravity="start|center_vertical"
                         style="?android:attr/progressBarStyleHorizontal"
+                        android:progressDrawable="@drawable/layer_progress_bar"
                         android:max="100"
-                        android:progressDrawable="@drawable/layer_list_progress_bar"
-                        android:progress="@{book.progress / book.page}"/>
+                        book_progress="@{book}" />
 
                 <TextView
                         android:layout_width="0dp"

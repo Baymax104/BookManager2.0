@@ -14,4 +14,14 @@ object MainRepository {
 
     var finishBooks: MutableList<Book> = mutableListOf()
 
+    init {
+        for (i in 1..10) {
+            processBooks.add(Book.build {
+                name = "来了"
+                page = 20
+                progress = 10
+            })
+        }
+    }
+
 }

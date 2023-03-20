@@ -9,6 +9,7 @@
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             app:cardCornerRadius="15dp">
 
         <LinearLayout
@@ -20,18 +21,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:layout_gravity="center_horizontal"
                     android:text="@string/select_add_way"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp" />
+                    android:paddingVertical="10dp"
+                    style="@style/DialogTitleTextStyle" />
 
             <View
                     android:layout_width="match_parent"
                     android:layout_height="0.1dp"
-                    android:background="#d6d6d6" />
+                    android:background="@color/separator_color" />
 
             <TextView
                     android:layout_width="match_parent"
@@ -39,16 +36,14 @@
                     android:id="@+id/scan_add"
                     android:text="@string/scan_add"
                     android:gravity="center"
-                    android:textColor="@color/black"
-                    android:textSize="17sp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:background="@drawable/selector_dialog_button" />
+                    android:paddingVertical="10dp"
+                    style="@style/DialogButtonTextStyle"
+                    android:background="?attr/selectableItemBackground" />
 
             <View
                     android:layout_width="match_parent"
                     android:layout_height="0.1dp"
-                    android:background="#d6d6d6" />
+                    android:background="@color/separator_color" />
 
             <TextView
                     android:layout_width="match_parent"
@@ -56,11 +51,9 @@
                     android:gravity="center"
                     android:id="@+id/manual_add"
                     android:text="@string/manual_add"
-                    android:textColor="@color/black"
-                    android:textSize="17sp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:background="@drawable/selector_dialog_button" />
+                    android:paddingVertical="10dp"
+                    style="@style/DialogButtonTextStyle"
+                    android:background="?attr/selectableItemBackground" />
 
 
         </LinearLayout>

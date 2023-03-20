@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.view
+package com.baymax104.bookmanager20.view.finish
 
 import android.os.Bundle
 import android.view.LayoutInflater

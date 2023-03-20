@@ -14,10 +14,6 @@ import com.baymax104.bookmanager20.repository.MainRepository
  */
 class ProcessViewModel : ViewModel() {
 
-
     val processBooks: MData<MutableList<Book>> = MutableLiveData(MainRepository.processBooks)
 
-    fun setProcessBooks(books: MutableList<Book>) {
-        processBooks.value = books
-    }
 }

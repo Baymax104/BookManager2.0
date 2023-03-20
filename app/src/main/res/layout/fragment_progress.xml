@@ -12,15 +12,15 @@
                 type="com.baymax104.bookmanager20.adapter.ProcessAdapter" />
     </data>
 
-    <com.drake.statelayout.StateLayout
+    <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:empty_layout="@layout/layout_empty"
-            android:id="@+id/state">
-        <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            android:layout_height="wrap_content">
 
+        <com.drake.statelayout.StateLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:empty_layout="@layout/layout_empty"
+                android:id="@+id/state">
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -32,22 +32,22 @@
                     recycler_data="@{vm.processBooks}"
                     recycler_adapter="@{adapter}"/>
 
-            <com.github.clans.fab.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/add"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="60dp"
-                    android:layout_marginEnd="25dp"
-                    android:src="@drawable/add"
-                    app:fab_size="normal"
-                    app:fab_colorNormal="@color/bar_color"
-                    app:fab_colorPressed="@color/bar_color"
-                    app:fab_colorRipple="@color/main_color"
-                    app:fab_showShadow="true"
-                    app:fab_shadowXOffset="2dp"
-                    app:fab_shadowYOffset="2dp" />
-        </FrameLayout>
+        </com.drake.statelayout.StateLayout>
 
-    </com.drake.statelayout.StateLayout>
+        <com.github.clans.fab.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/add"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="60dp"
+                android:layout_marginEnd="25dp"
+                android:src="@drawable/add"
+                app:fab_size="normal"
+                app:fab_colorNormal="@color/bar_color"
+                app:fab_colorPressed="@color/bar_color"
+                app:fab_colorRipple="@color/main_color"
+                app:fab_showShadow="true"
+                app:fab_shadowXOffset="2dp"
+                app:fab_shadowYOffset="2dp" />
+    </FrameLayout>
 </layout>
