@@ -33,4 +33,9 @@
         <item name="boxCornerRadiusTopEnd">15dp</item>
         <item name="boxCornerRadiusTopStart">15dp</item>
     </style>
+
+    <style name="BottomDialogBgStyle">
+        <item name="bl_solid_color">@color/white</item>
+        <item name="bl_corners_topRadius">15dp</item>
+    </style>
 </resources>

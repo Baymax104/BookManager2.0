@@ -56,7 +56,7 @@ object BindingUtil {
         } else {
             (book.progress * 1.0 / (if (book.page == 0) 1 else book.page) * 100).toInt()
         }
-        setProgress(progress, true)
+        setProgress(progress)
     }
 
     @JvmStatic

@@ -81,7 +81,7 @@
                         android:id="@+id/update_cancel"
                         android:gravity="center"
                         android:textColor="@color/black"
-                        android:background="@drawable/selector_dialog_button" />
+                        android:background="?attr/selectableItemBackground" />
 
                 <View
                         android:layout_width="0.1dp"
@@ -96,7 +96,7 @@
                         android:gravity="center"
                         android:id="@+id/update_confirm"
                         android:textColor="@color/black"
-                        android:background="@drawable/selector_dialog_button" />
+                        android:background="?attr/selectableItemBackground" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
