@@ -65,7 +65,8 @@
                 android:layout_marginVertical="10dp"
                 bind:hint="@{@string/input_name_hint}"
                 bind:handler="@{s->book.setName(s.toString())}"
-                bind:inputType="@{InputType.TYPE_CLASS_TEXT}"/>
+                bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
+                bind:text="@{book.name}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -75,7 +76,8 @@
                 android:layout_marginBottom="10dp"
                 bind:hint="@{@string/input_author_hint}"
                 bind:handler="@{s->book.setAuthor(s.toString())}"
-                bind:inputType="@{InputType.TYPE_CLASS_TEXT}"/>
+                bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
+                bind:text="@{book.author}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -85,7 +87,8 @@
                 android:layout_marginBottom="20dp"
                 bind:hint="@{@string/input_page_hint}"
                 bind:handler="@{s->book.setPage(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"
-                bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"/>
+                bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"
+                bind:text="@{book.page != 0 ? String.valueOf(book.page) : ``}"/>
 
         <View
                 android:layout_width="match_parent"

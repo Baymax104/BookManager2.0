@@ -2,6 +2,9 @@ package com.baymax104.bookmanager20.entity
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.util.PageDeserializer
 import com.fasterxml.jackson.annotation.JsonAlias
@@ -18,10 +21,16 @@ import java.util.*
  *@Date 2023/3/19 11:53
  *@Version 1
  */
+@Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Book(builder: Builder) : BaseObservable() {
+data class Book(
+    @JsonIgnore
+    @Ignore
+    val builder: Builder
+) : BaseObservable() {
 
     @JsonIgnore
+    @PrimaryKey(autoGenerate = true)
     var id = builder.id
 
     @JsonAlias("title", "name")
@@ -107,25 +116,14 @@ class Book(builder: Builder) : BaseObservable() {
     companion object {
         inline fun build(block: Builder.() -> Unit = {}) = Builder().apply(block).build()
 
-        fun copy(book: Book?) = Builder().apply {
-            book?.let {
-                id = it.id
-                name = it.name
-                page = it.page
-                author = it.author
-                progress = it.progress
-                startTime = it.startTime
-                endTime = it.endTime
-                photo = it.photo
-                publisher = it.publisher
-                isbn = it.isbn
-                description = it.description
-            }
-        }.build()
+        /**
+         * 使用book.copy()复制，若book==null，则使用默认Builder构造
+         */
+        fun copyNotNull(book: Book?) = book?.copy() ?: Builder().build()
     }
 
     class Builder {
-        var id = -1
+        var id = 0
         var name = ""
         var page = 0
         var author: String? = null
@@ -137,9 +135,5 @@ class Book(builder: Builder) : BaseObservable() {
         var isbn: String? = null
         var description: String? = null
         fun build() = Book(this)
-    }
-
-    override fun toString(): String {
-        return "Book(id=$id, name='$name', page=$page, author=$author, progress=$progress, startTime=$startTime, endTime=$endTime, photo=$photo, publisher=$publisher, description=$description, isbn=$isbn)"
     }
 }

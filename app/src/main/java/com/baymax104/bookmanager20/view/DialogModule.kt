@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.repository
+package com.baymax104.bookmanager20.view
 
 import android.content.Context
 import com.baymax104.bookmanager20.view.process.AddWayDialog

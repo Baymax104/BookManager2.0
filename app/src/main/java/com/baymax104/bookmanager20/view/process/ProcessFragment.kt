@@ -9,17 +9,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.adapter.ProcessAdapter
-import com.baymax104.bookmanager20.dataSource.web.WebError
-import com.baymax104.bookmanager20.dataSource.web.WebSuccess
+import com.baymax104.bookmanager20.dataSource.FAIL
+import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
 import com.baymax104.bookmanager20.util.*
-import com.baymax104.bookmanager20.view.MainActivity
 import com.baymax104.bookmanager20.viewModel.ProcessViewModel
 import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
 import javax.inject.Inject
@@ -82,17 +81,14 @@ class ProcessFragment : Fragment() {
             }
         }
 
-        val handler = CoroutineExceptionHandler { context, throwable ->
-            ToastUtils.showShort("$context: ${throwable.message}")
-        }
         Bus.with<String>(CaptureActivity::class todo "getResult")
-            .observeCoroutine(viewLifecycleOwner, MainActivity.scopeContext + handler) {
+            .observeCoroutine(viewLifecycleOwner, MainScopeContext + BaseExceptionHandler) {
                 when (val state = vm.requestBookInfo(it)) {
-                    is WebSuccess -> {
+                    is Success -> {
                         bookInfoDialog.show()
                         vm.requestBook.value = state.data
                     }
-                    is WebError -> ToastUtils.showShort(state.message)
+                    is FAIL -> ToastUtils.showShort(state.message)
                 }
             }
 

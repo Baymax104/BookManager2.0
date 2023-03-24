@@ -5,9 +5,7 @@ import androidx.lifecycle.Observer
 import com.jeremyliao.liveeventbus.core.LiveEventBusCore
 import com.jeremyliao.liveeventbus.core.Observable
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
@@ -50,10 +48,6 @@ internal class CoroutineObserver<T>(
     override fun toString(): String = "CoroutineScope(coroutineContext=$coroutineContext)"
 
     override fun onChanged(value: T) {
-        launch(Dispatchers.Main) {
-            withContext(coroutineContext) {
-                action(value)
-            }
-        }
+        launch { action(value) }
     }
 }

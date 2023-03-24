@@ -3,9 +3,15 @@ package com.baymax104.bookmanager20.view.process
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.baymax104.bookmanager20.R
+import com.baymax104.bookmanager20.dataSource.FAIL
+import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.databinding.DialogBookInfoBinding
+import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.util.ImageUtil
+import com.baymax104.bookmanager20.util.mainLaunch
 import com.baymax104.bookmanager20.view.MainActivity
 import com.baymax104.bookmanager20.viewModel.ProcessViewModel
+import com.blankj.utilcode.util.ToastUtils
 import com.lxj.xpopup.core.BottomPopupView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -36,7 +42,25 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
 
         binding.setModify { modifyInfoDialog.show() }
 
-        binding.setConfirm { }
+        binding.setConfirm {
+            dismissWith {
+                val book: Book? = binding.book
+                if (book == null) {
+                    ToastUtils.showShort("添加为空")
+                    return@dismissWith
+                }
+                mainLaunch {
+                    book.photo?.let {
+                        val file = ImageUtil.download(activity, it)
+                        book.photo = file?.absolutePath
+                    }
+                    when (val state = vm.insertBook(book)) {
+                        is Success -> ToastUtils.showShort("添加成功")
+                        is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
+                    }
+                }
+            }
+        }
 
         binding.setCancel { dismiss() }
     }

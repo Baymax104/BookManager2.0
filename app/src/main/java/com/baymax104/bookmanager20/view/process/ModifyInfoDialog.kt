@@ -27,12 +27,12 @@ class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
         val binding = DialogModifyInfoBinding.bind(popupImplView)
         binding.lifecycleOwner = this
 
-        binding.book = Book.copy(vm.requestBook.value)
+        binding.book = Book.copyNotNull(vm.requestBook.value)
 
         binding.setCancel { dismiss() }
 
         binding.setConfirm {
-            vm.requestBook.value = Book.copy(binding.book)
+            vm.requestBook.value = Book.copyNotNull(binding.book)
             dismiss()
         }
     }

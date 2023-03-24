@@ -14,11 +14,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.adapter.FragmentAdapter
 import com.baymax104.bookmanager20.databinding.ActivityMainBinding
+import com.baymax104.bookmanager20.util.MainScope
 import com.baymax104.bookmanager20.viewModel.MainViewModel
 import com.blankj.utilcode.util.ToastUtils
 import com.drake.statusbar.immersive
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 
 @AndroidEntryPoint
@@ -27,11 +27,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
     val vm: MainViewModel by viewModels()
-
-    companion object {
-        val scope = MainScope()
-        val scopeContext = scope.coroutineContext
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +88,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
+        MainScope.cancel()
     }
 }

@@ -1,5 +1,6 @@
 package com.baymax104.bookmanager20.repository
 
+import com.baymax104.bookmanager20.dataSource.local.LocalDatabase
 import com.baymax104.bookmanager20.dataSource.web.BookService
 import com.baymax104.bookmanager20.dataSource.web.WebService
 import com.baymax104.bookmanager20.entity.Book
@@ -17,12 +18,18 @@ import javax.inject.Singleton
  *@Version 1
  */
 @Singleton
-class MainRepository @Inject constructor() {
+class MainRepository @Inject constructor(
+    webService: WebService,
+    localDatabase: LocalDatabase
+) {
+
     var processBooks: MutableList<Book> = mutableListOf()
 
     var finishBooks: MutableList<Book> = mutableListOf()
 
-    private val bookService = WebService.create<BookService>()
+    private val bookService = webService.create<BookService>()
+
+    private val bookDao = localDatabase.bookDao()
 
     init {
         for (i in 1..10) {
@@ -32,6 +39,10 @@ class MainRepository @Inject constructor() {
                 progress = 10
             })
         }
+    }
+
+    suspend fun insertBook(book: Book) = withContext(Dispatchers.IO) {
+        bookDao.insert(book)
     }
 
     suspend fun requestBookInfo(isbn: String): Result<Book> = withContext(Dispatchers.IO) {

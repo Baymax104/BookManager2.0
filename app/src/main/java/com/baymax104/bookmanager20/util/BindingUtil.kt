@@ -5,7 +5,6 @@ import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.text.isDigitsOnly
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import androidx.fragment.app.Fragment
@@ -22,10 +21,6 @@ import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -37,10 +32,6 @@ import java.util.*
  */
 typealias MData<T> = MutableLiveData<T>
 typealias MList<T> = MutableLiveData<MutableList<T>>
-
-val DateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
-
-val DateDetailFormatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA)
 
 object DataBindingAdapter {
 
@@ -100,16 +91,4 @@ object DataBindingAdapter {
     @BindingConversion
     fun convertDateToString(date: Date?): String? = date?.let { DateFormatter.format(it) }
 
-}
-
-object PageDeserializer : JsonDeserializer<Int>() {
-    override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): Int {
-        if (p == null) return 0
-        val value = p.codec.readValue(p, String::class.java)
-        return when {
-            value == "" -> 0
-            value.isDigitsOnly() -> value.toInt()
-            else -> value.substring(0..value.length - 2).toInt()
-        }
-    }
 }

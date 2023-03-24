@@ -1,8 +1,13 @@
 package com.baymax104.bookmanager20.util
 
 import android.content.Context
+import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
@@ -47,12 +52,9 @@ object ImageUtil {
             .ignoreBy(80)
             .setRenameListener { "${DateDetailFormatter.format(Date())}.jpg" }
             .setCompressListener(object : OnCompressListener {
-                override fun onStart() {
-                }
+                override fun onStart() {}
 
-                override fun onSuccess(file: File?) {
-                    onSuccess(file)
-                }
+                override fun onSuccess(file: File?) = onSuccess(file)
 
                 override fun onError(e: Throwable?) {
                     ToastUtils.showShort("图片压缩失败：$e")
@@ -61,7 +63,15 @@ object ImageUtil {
             .launch()
     }
 
-    fun download() {
+    suspend fun download(context: Context, url: String): File? = withContext(Dispatchers.IO) {
+        val source = Glide.with(context)
+            .downloadOnly()
+            .load(url)
+            .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+            .get()
+        val filename = "${DateDetailFormatter.format(Date())}.jpg"
+        val dest = File(PathUtils.getExternalAppFilesPath(), filename)
 
+        if (FileUtils.copy(source, dest)) dest else null
     }
 }
