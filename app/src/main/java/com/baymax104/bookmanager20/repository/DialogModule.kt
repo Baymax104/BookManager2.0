@@ -4,6 +4,7 @@ import android.content.Context
 import com.baymax104.bookmanager20.view.process.AddWayDialog
 import com.baymax104.bookmanager20.view.process.BookInfoDialog
 import com.baymax104.bookmanager20.view.process.ManualAddDialog
+import com.baymax104.bookmanager20.view.process.ModifyInfoDialog
 import com.lxj.xpopup.XPopup
 import dagger.Module
 import dagger.Provides
@@ -40,4 +41,10 @@ class DialogModule {
     fun bookInfoDialog(@ActivityContext context: Context) =
         XPopup.Builder(context)
             .asCustom(BookInfoDialog(context)) as BookInfoDialog
+
+    @Provides
+    @ActivityScoped
+    fun modifyInfoDialog(@ActivityContext context: Context) =
+        XPopup.Builder(context)
+            .asCustom(ModifyInfoDialog(context)) as ModifyInfoDialog
 }

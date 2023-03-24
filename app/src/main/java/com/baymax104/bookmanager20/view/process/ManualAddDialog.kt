@@ -20,7 +20,7 @@ import com.lxj.xpopup.core.BottomPopupView
  */
 class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
-    val vm = ViewModelProvider(activity as MainActivity)[ProcessViewModel::class.java]
+    private val vm = ViewModelProvider(activity as MainActivity)[ProcessViewModel::class.java]
 
     override fun getImplLayoutId(): Int = R.layout.dialog_manual_add
 

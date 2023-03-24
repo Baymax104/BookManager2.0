@@ -27,13 +27,9 @@ class AddWayDialog(context: Context) : CenterPopupView(context) {
         val binding = DialogAddWayBinding.bind(popupImplView)
         binding.lifecycleOwner = this
 
-        binding.setScan {
-            dismissWith { CaptureActivity.actionStart(context) }
-        }
+        binding.setScan { dismissWith { CaptureActivity.actionStart(context) } }
 
-        binding.setManual {
-            dismissWith { manualAddDialog.show() }
-        }
+        binding.setManual { dismissWith { manualAddDialog.show() } }
     }
 
 }

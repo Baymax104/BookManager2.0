@@ -106,6 +106,22 @@ class Book(builder: Builder) : BaseObservable() {
 
     companion object {
         inline fun build(block: Builder.() -> Unit = {}) = Builder().apply(block).build()
+
+        fun copy(book: Book?) = Builder().apply {
+            book?.let {
+                id = it.id
+                name = it.name
+                page = it.page
+                author = it.author
+                progress = it.progress
+                startTime = it.startTime
+                endTime = it.endTime
+                photo = it.photo
+                publisher = it.publisher
+                isbn = it.isbn
+                description = it.description
+            }
+        }.build()
     }
 
     class Builder {
