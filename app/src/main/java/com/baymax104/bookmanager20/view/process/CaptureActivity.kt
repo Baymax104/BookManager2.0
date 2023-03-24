@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.baymax104.bookmanager20.R
+import com.baymax104.bookmanager20.util.Bus
+import com.baymax104.bookmanager20.util.todo
 import com.drake.statusbar.immersive
 import com.drake.statusbar.setFullscreen
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.DecodeHintType
-import com.jeremyliao.liveeventbus.LiveEventBus
 import com.king.zxing.DecodeConfig
 import com.king.zxing.analyze.MultiFormatAnalyzer
 
@@ -52,7 +53,7 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
             .setOnScanResultCallback {
                 val code = it.text
                 if (code.matches(isbnReg)) {
-                    LiveEventBus.get("CaptureActivity-getResult", String::class.java).post(code)
+                    Bus.with<String>(this::class todo "getResult").post(code)
                     cameraScan.setAnalyzeImage(false)
                     return@setOnScanResultCallback false
                 }

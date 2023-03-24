@@ -2,12 +2,14 @@ package com.baymax104.bookmanager20.view
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.adapter.FragmentAdapter
@@ -15,19 +17,26 @@ import com.baymax104.bookmanager20.databinding.ActivityMainBinding
 import com.baymax104.bookmanager20.viewModel.MainViewModel
 import com.blankj.utilcode.util.ToastUtils
 import com.drake.statusbar.immersive
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
-    private lateinit var vm: MainViewModel
+    val vm: MainViewModel by viewModels()
+
+    companion object {
+        val scope = MainScope()
+        val scopeContext = scope.coroutineContext
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
-        vm = ViewModelProvider(this)[MainViewModel::class.java]
-
         binding.viewModel = vm
         binding.adapter = FragmentAdapter(this)
 
@@ -40,8 +49,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.nav.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.progress -> vm.setPage(0)
-                R.id.finish -> vm.setPage(1)
+                R.id.progress -> vm.page.value = 0
+                R.id.finish -> vm.page.value = 1
             }
             true
         }
@@ -67,17 +76,23 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolBar.setNavigationIcon(R.drawable.left_nav)
         binding.leftNav.itemIconTintList = null
-    }
+        val menuProvider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) =
+                menuInflater.inflate(R.menu.toolbar, menu)
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            binding.drawer.openDrawer(GravityCompat.START)
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+                if (menuItem.itemId == android.R.id.home) {
+                    binding.drawer.openDrawer(GravityCompat.START)
+                    true
+                } else {
+                    true
+                }
         }
-        return true
+        addMenuProvider(menuProvider, this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

@@ -1,17 +1,28 @@
 package com.baymax104.bookmanager20.view.process
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.adapter.ProcessAdapter
+import com.baymax104.bookmanager20.dataSource.web.WebError
+import com.baymax104.bookmanager20.dataSource.web.WebSuccess
 import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
+import com.baymax104.bookmanager20.util.*
+import com.baymax104.bookmanager20.view.MainActivity
 import com.baymax104.bookmanager20.viewModel.ProcessViewModel
+import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
-import com.jeremyliao.liveeventbus.LiveEventBus
-import com.lxj.xpopup.XPopup
+import com.blankj.utilcode.util.UriUtils
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineExceptionHandler
+import permissions.dispatcher.NeedsPermission
+import permissions.dispatcher.RuntimePermissions
+import javax.inject.Inject
 
 /**
  *@Description
@@ -20,11 +31,33 @@ import com.lxj.xpopup.XPopup
  *@Date 2023/3/18 22:39
  *@Version 1
  */
+@AndroidEntryPoint
+@RuntimePermissions
 class ProcessFragment : Fragment() {
 
-    private lateinit var binding: FragmentProgressBinding
+    lateinit var binding: FragmentProgressBinding
 
-    private lateinit var vm: ProcessViewModel
+    val vm: ProcessViewModel by activityViewModels()
+
+    @Inject
+    lateinit var addWayDialog: AddWayDialog
+
+    @Inject
+    lateinit var bookInfoDialog: BookInfoDialog
+
+    private var uriPath: String? = null
+
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == -1) {
+            uriPath?.let {
+                ImageUtil.compress(requireContext(), it) { file ->
+                    vm.photoUri.value = file?.absolutePath
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +70,7 @@ class ProcessFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
         binding.lifecycleOwner = viewLifecycleOwner
-        vm = ViewModelProvider(requireActivity())[ProcessViewModel::class.java]
 
         binding.vm = vm
         val adapter = ProcessAdapter()
@@ -51,15 +82,35 @@ class ProcessFragment : Fragment() {
             }
         }
 
-        LiveEventBus.get("CaptureActivity-getResult", String::class.java)
-            .observe(viewLifecycleOwner) {
-                ToastUtils.showShort(it)
+        val handler = CoroutineExceptionHandler { context, throwable ->
+            ToastUtils.showShort("$context: ${throwable.message}")
+        }
+        Bus.with<String>(CaptureActivity::class todo "getResult")
+            .observeCoroutine(viewLifecycleOwner, MainActivity.scopeContext + handler) {
+                when (val state = vm.requestBookInfo(it)) {
+                    is WebSuccess -> {
+                        bookInfoDialog.show()
+                        vm.requestBook.value = state.data
+                    }
+                    is WebError -> ToastUtils.showShort(state.message)
+                }
             }
 
-        binding.add.setOnClickListener {
-            XPopup.Builder(requireActivity())
-                .asCustom(AddBookDialog(requireActivity()))
-                .show()
+        Bus.observeTag(ManualAddDialog::class todo "takePhoto", viewLifecycleOwner) {
+            takePhoto()
         }
+
+        binding.add.setOnClickListener {
+            addWayDialog.show()
+        }
+    }
+
+    @NeedsPermission(Manifest.permission.CAMERA)
+    fun takePhoto() {
+        val file = ImageUtil.createFile()
+        uriPath = file?.absolutePath
+        val uri = UriUtils.file2Uri(file)
+        val intent = IntentUtils.getCaptureIntent(uri)
+        cameraLauncher.launch(intent)
     }
 }

@@ -10,4 +10,5 @@
     <color name="transparent">#0000</color>
     <color name="separator_color">#d6d6d6</color>
     <color name="progressbar_bg">#c5e2ff</color>
+    <color name="border_color">#e0e0e0</color>
 </resources>

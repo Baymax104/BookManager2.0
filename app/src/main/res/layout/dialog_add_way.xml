@@ -3,7 +3,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="android.view.View.OnClickListener"/>
+        <variable
+                name="scan"
+                type="OnClickListener" />
+        <variable
+                name="manual"
+                type="OnClickListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -33,12 +39,12 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/scan_add"
                     android:text="@string/scan_add"
                     android:gravity="center"
                     android:paddingVertical="10dp"
                     style="@style/DialogButtonTextStyle"
-                    android:background="?attr/selectableItemBackground" />
+                    android:background="?attr/selectableItemBackground"
+                    android:onClick="@{scan}"/>
 
             <View
                     android:layout_width="match_parent"
@@ -49,12 +55,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:id="@+id/manual_add"
                     android:text="@string/manual_add"
                     android:paddingVertical="10dp"
                     style="@style/DialogButtonTextStyle"
-                    android:background="?attr/selectableItemBackground" />
-
+                    android:background="?attr/selectableItemBackground"
+                    android:onClick="@{manual}"/>
 
         </LinearLayout>
 

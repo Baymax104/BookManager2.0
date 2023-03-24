@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.adapter.FinishAdapter
 import com.baymax104.bookmanager20.databinding.FragmentFinishBinding
 import com.baymax104.bookmanager20.viewModel.FinishViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *@Description
@@ -17,11 +18,12 @@ import com.baymax104.bookmanager20.viewModel.FinishViewModel
  *@Date 2023/3/18 22:56
  *@Version 1
  */
+@AndroidEntryPoint
 class FinishFragment : Fragment() {
 
     private lateinit var binding: FragmentFinishBinding
 
-    private lateinit var vm: FinishViewModel
+    private val vm: FinishViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,9 +36,7 @@ class FinishFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
         binding.lifecycleOwner = viewLifecycleOwner
-        vm = ViewModelProvider(requireActivity())[FinishViewModel::class.java]
 
         binding.vm = vm
         val adapter = FinishAdapter()

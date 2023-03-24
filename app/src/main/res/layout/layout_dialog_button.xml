@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+                name="confirm"
+                type="android.view.View.OnClickListener" />
+        <variable
+                name="cancel"
+                type="android.view.View.OnClickListener" />
+    </data>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="45dp">
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/cancel"
+                android:text="@string/cancel"
+                android:background="?attr/selectableItemBackground"
+                style="@style/DialogButtonTextStyle"
+                android:onClick="@{cancel}"/>
+
+        <View
+                android:layout_width="0.1dp"
+                android:layout_height="match_parent"
+                android:background="@color/separator_color" />
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/confirm"
+                android:gravity="center"
+                android:text="@string/confirm"
+                android:background="?attr/selectableItemBackground"
+                style="@style/DialogButtonTextStyle"
+                android:onClick="@{confirm}"/>
+
+    </LinearLayout>
+</layout>
