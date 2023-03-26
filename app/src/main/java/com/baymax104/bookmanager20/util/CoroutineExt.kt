@@ -1,7 +1,10 @@
 package com.baymax104.bookmanager20.util
 
 import com.blankj.utilcode.util.ToastUtils
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -13,8 +16,9 @@ import kotlin.coroutines.EmptyCoroutineContext
  *@Version 1
  */
 
-val MainScope = MainScope()
-val MainScopeContext = MainScope.coroutineContext
+lateinit var MainScope: CoroutineScope
+
+lateinit var MainScopeContext: CoroutineContext
 
 fun mainLaunch(
     context: CoroutineContext = EmptyCoroutineContext,

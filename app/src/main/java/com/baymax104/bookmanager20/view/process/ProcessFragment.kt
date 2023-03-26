@@ -80,6 +80,12 @@ class ProcessFragment : Fragment() {
                 binding.state.showEmpty()
             }
         }
+        vm.observerBuilder.observe {
+            add { index, _ ->
+                adapter.notifyItemInserted(index)
+                binding.bookList.scrollToPosition(index)
+            }
+        }
 
         Bus.with<String>(CaptureActivity::class todo "getResult")
             .observeCoroutine(viewLifecycleOwner, MainScopeContext + BaseExceptionHandler) {

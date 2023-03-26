@@ -20,5 +20,5 @@ interface BookDao {
     suspend fun insert(book: Book): Long
 
     @Query("select * from book")
-    suspend fun queryAll(): Book
+    suspend fun queryAll(): MutableList<Book>
 }

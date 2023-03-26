@@ -31,7 +31,6 @@ import java.util.*
  *@Version 1
  */
 typealias MData<T> = MutableLiveData<T>
-typealias MList<T> = MutableLiveData<MutableList<T>>
 
 object DataBindingAdapter {
 
@@ -43,10 +42,13 @@ object DataBindingAdapter {
     }
 
     @JvmStatic
-    @BindingAdapter("recycler_adapter", "recycler_data")
-    fun <T> RecyclerView.setRecyclerData(adapter: BaseAdapter<T>, data: MutableList<T>) {
-        adapter.data = data
-        this.adapter = adapter
+    @Suppress("NotifyDataSetChanged", "unchecked_cast")
+    @BindingAdapter("recycler_data")
+    fun <T> RecyclerView.setRecyclerData(data: MutableList<T>?) {
+        (adapter as? BaseAdapter<T>)?.apply {
+            this.data = data
+            notifyDataSetChanged()
+        }
     }
 
     @SuppressLint("SetTextI18n")

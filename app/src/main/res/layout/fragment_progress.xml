@@ -23,14 +23,13 @@
                 android:id="@+id/state">
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:id="@+id/book_list"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     tools:listitem="@layout/item_progress_book"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
-                    recycler_data="@{vm.processBooks}"
-                    recycler_adapter="@{adapter}"/>
+                    android:adapter="@{adapter}"
+                    recycler_data="@{vm.processBooks}"/>
 
         </com.drake.statelayout.StateLayout>
 

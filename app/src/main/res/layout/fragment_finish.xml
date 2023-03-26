@@ -7,9 +7,6 @@
         <variable
                 name="vm"
                 type="com.baymax104.bookmanager20.viewModel.FinishViewModel" />
-        <variable
-                name="adapter"
-                type="com.baymax104.bookmanager20.adapter.FinishAdapter" />
     </data>
 
     <com.drake.statelayout.StateLayout
@@ -25,9 +22,7 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:listitem="@layout/item_finish_book"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
-                recycler_data="@{vm.finishBooks}"
-                recycler_adapter="@{adapter}"/>
+                android:orientation="vertical" />
 
     </com.drake.statelayout.StateLayout>
 </layout>

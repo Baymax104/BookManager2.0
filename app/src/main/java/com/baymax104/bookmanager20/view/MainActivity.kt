@@ -10,11 +10,13 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.adapter.FragmentAdapter
 import com.baymax104.bookmanager20.databinding.ActivityMainBinding
 import com.baymax104.bookmanager20.util.MainScope
+import com.baymax104.bookmanager20.util.MainScopeContext
 import com.baymax104.bookmanager20.viewModel.MainViewModel
 import com.blankj.utilcode.util.ToastUtils
 import com.drake.statusbar.immersive
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainScope = lifecycleScope
+        MainScopeContext = MainScope.coroutineContext
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         binding.viewModel = vm
@@ -62,7 +67,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
     }
 
     private fun initWindow() {

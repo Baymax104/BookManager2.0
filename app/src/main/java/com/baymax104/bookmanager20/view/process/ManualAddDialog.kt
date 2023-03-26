@@ -32,19 +32,20 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
         super.onCreate()
         val binding = DialogManualAddBinding.bind(popupImplView)
 
-        val book = Book()
-        binding.book = book
+        binding.book = Book()
 
-        vm.photoUri.observe(this) { book.photo = it }
+        vm.photoUri.observe(this) { binding.book?.apply { photo = it } }
 
         binding.setTakePhoto { Bus.postTag(this::class todo "takePhoto") }
 
         binding.setConfirm {
             dismissWith {
                 mainLaunch {
-                    when (val state = vm.insertBook(book)) {
-                        is Success -> ToastUtils.showShort("添加成功")
-                        is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
+                    binding.book?.let {
+                        when (val state = vm.insertBook(it)) {
+                            is Success -> ToastUtils.showShort("添加成功")
+                            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
+                        }
                     }
                     binding.book = Book()
                 }
