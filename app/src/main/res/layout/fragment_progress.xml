@@ -10,6 +10,9 @@
         <variable
                 name="adapter"
                 type="com.baymax104.bookmanager20.adapter.ProcessAdapter" />
+        <variable
+                name="add"
+                type="android.view.View.OnClickListener" />
     </data>
 
     <FrameLayout
@@ -29,14 +32,13 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
                     android:adapter="@{adapter}"
-                    recycler_data="@{vm.processBooks}"/>
+                    recycler_data="@{vm.processBooks}" />
 
         </com.drake.statelayout.StateLayout>
 
         <com.github.clans.fab.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/add"
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="60dp"
                 android:layout_marginEnd="25dp"
@@ -47,6 +49,7 @@
                 app:fab_colorRipple="@color/main_color"
                 app:fab_showShadow="true"
                 app:fab_shadowXOffset="2dp"
-                app:fab_shadowYOffset="2dp" />
+                app:fab_shadowYOffset="2dp"
+                android:onClick="@{add}"/>
     </FrameLayout>
 </layout>

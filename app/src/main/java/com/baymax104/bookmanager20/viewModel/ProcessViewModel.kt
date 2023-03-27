@@ -35,10 +35,10 @@ class ProcessViewModel @Inject constructor(
     val processBooks: MediatorLiveData<LiveList<Book>> = MediatorLiveData()
 
     // 手动添加，拍照图片路径
-    val photoUri: MData<String?> = MData(null)
+    val photoUri: MData<String> = MData()
 
     // 扫码添加，请求返回的Book
-    val requestBook: MData<Book?> = MData(null)
+    val requestBook: MData<Book> = MData()
 
     init {
         processBooks.addSource(books) {

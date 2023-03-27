@@ -75,6 +75,12 @@ class ProcessFragment : Fragment() {
         val adapter = ProcessAdapter()
         binding.adapter = adapter
 
+        adapter.onClick = {
+            ToastUtils.showShort(it.toString())
+        }
+
+        binding.setAdd { addWayDialog.show() }
+
         vm.processBooks.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {
                 binding.state.showEmpty()
@@ -83,27 +89,22 @@ class ProcessFragment : Fragment() {
         vm.observerBuilder.observe {
             add { index, _ ->
                 adapter.notifyItemInserted(index)
-                binding.bookList.scrollToPosition(index)
+                binding.bookList.smoothScrollToPosition(index)
             }
         }
+
+        vm.requestBook.observe(viewLifecycleOwner) { bookInfoDialog.show() }
 
         Bus.with<String>(CaptureActivity::class todo "getResult")
             .observeCoroutine(viewLifecycleOwner, MainScopeContext + BaseExceptionHandler) {
                 when (val state = vm.requestBookInfo(it)) {
-                    is Success -> {
-                        bookInfoDialog.show()
-                        vm.requestBook.value = state.data
-                    }
+                    is Success -> vm.requestBook.value = state.data
                     is FAIL -> ToastUtils.showShort(state.message)
                 }
             }
 
         Bus.observeTag(ManualAddDialog::class todo "takePhoto", viewLifecycleOwner) {
             takePhoto()
-        }
-
-        binding.add.setOnClickListener {
-            addWayDialog.show()
         }
     }
 

@@ -25,10 +25,13 @@ class ProcessAdapter : BaseAdapter<Book>() {
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        val book = data?.get(holder.absoluteAdapterPosition)
-        val binding = (holder as ViewHolder).binding
-        binding.book = book
-        binding.isEdit = isEdit
+        data?.apply {
+            val book = get(holder.absoluteAdapterPosition)
+            val binding = (holder as ViewHolder).binding
+            binding.book = book
+            binding.isEdit = isEdit
+            holder.itemView.setOnClickListener { onClick(book) }
+        }
     }
 
     private class ViewHolder(itemView: View) : BaseViewHolder(itemView) {

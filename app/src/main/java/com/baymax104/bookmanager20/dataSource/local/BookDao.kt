@@ -2,7 +2,6 @@ package com.baymax104.bookmanager20.dataSource.local
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.baymax104.bookmanager20.entity.Book
 
@@ -16,9 +15,9 @@ import com.baymax104.bookmanager20.entity.Book
 @Dao
 interface BookDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     suspend fun insert(book: Book): Long
 
-    @Query("select * from book")
+    @Query("select * from book order by tableRank asc")
     suspend fun queryAll(): MutableList<Book>
 }

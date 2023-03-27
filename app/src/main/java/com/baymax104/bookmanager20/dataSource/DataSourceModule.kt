@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import com.baymax104.bookmanager20.dataSource.local.LocalDatabase
+import com.baymax104.bookmanager20.dataSource.local.Migrate1_2
 import com.baymax104.bookmanager20.repository.API_KEY
 import dagger.Module
 import dagger.Provides
@@ -32,7 +33,8 @@ class DataSourceModule {
             context,
             LocalDatabase::class.java,
             "BookManagerDB"
-        ).build()
+        ).addMigrations(Migrate1_2)
+            .build()
 
 
     @Provides

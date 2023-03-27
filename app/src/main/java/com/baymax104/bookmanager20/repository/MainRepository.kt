@@ -32,6 +32,8 @@ class MainRepository @Inject constructor(
 
 
     suspend fun insertBook(book: Book) = withContext(Dispatchers.IO) {
+        val all = bookDao.queryAll()
+        book.tableRank = all.size + 1
         bookDao.insert(book)
     }
 

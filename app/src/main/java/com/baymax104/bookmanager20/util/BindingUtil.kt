@@ -1,6 +1,5 @@
 package com.baymax104.bookmanager20.util
 
-import android.annotation.SuppressLint
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import android.widget.ProgressBar
@@ -32,6 +31,7 @@ import java.util.*
  */
 typealias MData<T> = MutableLiveData<T>
 
+@Suppress("unchecked_cast", "NotifyDataSetChanged", "SetTextI18n")
 object DataBindingAdapter {
 
     @JvmStatic
@@ -41,17 +41,18 @@ object DataBindingAdapter {
         this.adapter = adapter
     }
 
+    private fun <T> toBase(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?) =
+        adapter as? BaseAdapter<T>
+
     @JvmStatic
-    @Suppress("NotifyDataSetChanged", "unchecked_cast")
     @BindingAdapter("recycler_data")
     fun <T> RecyclerView.setRecyclerData(data: MutableList<T>?) {
-        (adapter as? BaseAdapter<T>)?.apply {
+        toBase<T>(adapter)?.apply {
             this.data = data
             notifyDataSetChanged()
         }
     }
 
-    @SuppressLint("SetTextI18n")
     @JvmStatic
     @BindingAdapter("book_finish_time")
     fun TextView.setFinishTime(book: Book) {

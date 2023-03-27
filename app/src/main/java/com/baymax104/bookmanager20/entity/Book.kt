@@ -110,6 +110,9 @@ data class Book(
             notifyPropertyChanged(BR.isbn)
         }
 
+    @JsonIgnore
+    var tableRank = builder.tableRank
+
     @JsonCreator
     constructor() : this(Builder())
 
@@ -134,6 +137,11 @@ data class Book(
         var publisher: String? = null
         var isbn: String? = null
         var description: String? = null
+        var tableRank = 0
         fun build() = Book(this)
+    }
+
+    override fun toString(): String {
+        return "Book(name='$name', page=$page, author=$author, progress=$progress, startTime=$startTime, endTime=$endTime, photo=$photo, publisher=$publisher, description=$description, isbn=$isbn, tableRank=$tableRank)"
     }
 }
