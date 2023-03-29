@@ -127,7 +127,7 @@ data class Book(
 
     class Builder {
         var id = 0
-        var name = ""
+        var name: String? = null
         var page = 0
         var author: String? = null
         var progress = 0
@@ -137,7 +137,7 @@ data class Book(
         var publisher: String? = null
         var isbn: String? = null
         var description: String? = null
-        var tableRank = 0
+        var tableRank = -1
         fun build() = Book(this)
     }
 

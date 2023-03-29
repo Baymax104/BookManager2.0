@@ -1,9 +1,6 @@
 package com.baymax104.bookmanager20.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import com.baymax104.bookmanager20.dataSource.FAIL
 import com.baymax104.bookmanager20.dataSource.ResultState
 import com.baymax104.bookmanager20.dataSource.Success
@@ -11,6 +8,8 @@ import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.LiveList
 import com.baymax104.bookmanager20.util.MData
+import com.baymax104.bookmanager20.util.MLD
+import com.baymax104.bookmanager20.util.add
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -26,13 +25,9 @@ class ProcessViewModel @Inject constructor(
     private val repo: MainRepository
 ) : ViewModel() {
 
-    private val books: LiveData<MutableList<Book>> = liveData {
-        emit(repo.queryAllBook())
-    }
-
     var observerBuilder = LiveList.Builder<Book>()
 
-    val processBooks: MediatorLiveData<LiveList<Book>> = MediatorLiveData()
+    val processBooks: MLD<LiveList<Book>> = MLD()
 
     // 手动添加，拍照图片路径
     val photoUri: MData<String> = MData()
@@ -41,7 +36,7 @@ class ProcessViewModel @Inject constructor(
     val requestBook: MData<Book> = MData()
 
     init {
-        processBooks.addSource(books) {
+        processBooks.addSource(repo.processBooks) {
             processBooks.value = observerBuilder.bind(LiveList(it))
         }
     }
@@ -58,11 +53,11 @@ class ProcessViewModel @Inject constructor(
         }
     }
 
-    suspend fun insertBook(book: Book): ResultState<Nothing?> {
+    suspend fun insertProcessBook(book: Book): ResultState<Nothing?> {
         return try {
-            val i = repo.insertBook(book)
+            val i = repo.insertProcessBook(book)
             book.id = i.toInt()
-            processBooks.value?.add(book)
+            processBooks.add(book)
             Success(null)
         } catch (e: Exception) {
             FAIL(e.message, e)

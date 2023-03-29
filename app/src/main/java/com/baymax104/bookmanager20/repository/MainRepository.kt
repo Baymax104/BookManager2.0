@@ -1,9 +1,12 @@
 package com.baymax104.bookmanager20.repository
 
+import androidx.lifecycle.liveData
+import androidx.room.Transaction
 import com.baymax104.bookmanager20.dataSource.local.LocalDatabase
 import com.baymax104.bookmanager20.dataSource.web.BookService
 import com.baymax104.bookmanager20.dataSource.web.WebService
 import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.util.LData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -22,26 +25,35 @@ class MainRepository @Inject constructor(
     localDatabase: LocalDatabase
 ) {
 
-    var processBooks: MutableList<Book> = mutableListOf()
+    val processBooks: LData<MutableList<Book>> = liveData {
+        emit(queryAllProcessBook())
+    }
 
-    var finishBooks: MutableList<Book> = mutableListOf()
+    val finishBooks: LData<MutableList<Book>> = liveData {
+        emit(queryAllFinishBook())
+    }
 
     private val bookService = webService.create<BookService>()
 
     private val bookDao = localDatabase.bookDao()
 
 
-    suspend fun insertBook(book: Book) = withContext(Dispatchers.IO) {
-        val all = bookDao.queryAll()
-        book.tableRank = all.size + 1
-        bookDao.insert(book)
+    @Transaction
+    suspend fun insertProcessBook(book: Book) = withContext(Dispatchers.IO) {
+        val all = bookDao.queryAllProcess()
+        book.tableRank = all.size
+        bookDao.insertProcess(book)
     }
 
     suspend fun requestBookInfo(isbn: String) = withContext(Dispatchers.IO) {
         bookService.requestBookInfo(isbn)
     }
 
-    suspend fun queryAllBook() = withContext(Dispatchers.IO) {
-        bookDao.queryAll()
+    suspend fun queryAllProcessBook() = withContext(Dispatchers.IO) {
+        bookDao.queryAllProcess()
+    }
+
+    suspend fun queryAllFinishBook() = withContext(Dispatchers.IO) {
+        bookDao.queryAllFinish()
     }
 }

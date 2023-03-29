@@ -81,15 +81,18 @@ class ProcessFragment : Fragment() {
 
         binding.setAdd { addWayDialog.show() }
 
+        // TODO 从缺省页切换回正常页面
         vm.processBooks.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {
                 binding.state.showEmpty()
+            } else {
+                binding.state.showContent()
             }
         }
         vm.observerBuilder.observe {
             add { index, _ ->
+                binding.bookList.scrollToPosition(index)
                 adapter.notifyItemInserted(index)
-                binding.bookList.smoothScrollToPosition(index)
             }
         }
 

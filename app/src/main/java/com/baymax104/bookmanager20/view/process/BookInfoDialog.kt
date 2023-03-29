@@ -54,7 +54,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
                         val file = ImageUtil.download(activity, it)
                         book.photo = file?.absolutePath
                     }
-                    when (val state = vm.insertBook(book)) {
+                    when (val state = vm.insertProcessBook(book)) {
                         is Success -> ToastUtils.showShort("添加成功")
                         is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
                     }

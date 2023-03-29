@@ -12,6 +12,7 @@ import kotlin.properties.Delegates
 
 typealias ListObserverList<T> = MutableList<ListObserver<T>>
 
+@Suppress("unused")
 class LiveList<T>(override var size: Int) : AbstractMutableList<T>() {
 
     private val data: MutableList<T> = mutableListOf()

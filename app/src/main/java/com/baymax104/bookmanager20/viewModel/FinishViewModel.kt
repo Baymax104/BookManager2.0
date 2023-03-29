@@ -1,10 +1,10 @@
 package com.baymax104.bookmanager20.viewModel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
-import com.baymax104.bookmanager20.util.MData
+import com.baymax104.bookmanager20.util.LiveList
+import com.baymax104.bookmanager20.util.MLD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -20,6 +20,14 @@ class FinishViewModel @Inject constructor(
     private val repo: MainRepository
 ) : ViewModel() {
 
-    var finishBooks: MData<MutableList<Book>> = MutableLiveData(repo.finishBooks)
+    val finishBooks: MLD<LiveList<Book>> = MLD()
+
+    var observerBuilder = LiveList.Builder<Book>()
+
+    init {
+        finishBooks.addSource(repo.finishBooks) {
+            finishBooks.value = observerBuilder.bind(LiveList(it))
+        }
+    }
 
 }

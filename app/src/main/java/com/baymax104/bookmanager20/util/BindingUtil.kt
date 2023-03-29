@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.baymax104.bookmanager20.adapter.BaseAdapter
@@ -29,8 +28,6 @@ import java.util.*
  *@Date 2023/3/18 23:41
  *@Version 1
  */
-typealias MData<T> = MutableLiveData<T>
-
 @Suppress("unchecked_cast", "NotifyDataSetChanged", "SetTextI18n")
 object DataBindingAdapter {
 
@@ -41,13 +38,13 @@ object DataBindingAdapter {
         this.adapter = adapter
     }
 
-    private fun <T> toBase(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?) =
-        adapter as? BaseAdapter<T>
+    private fun <T> RecyclerView.Adapter<RecyclerView.ViewHolder>?.toBase() =
+        this as? BaseAdapter<T>
 
     @JvmStatic
     @BindingAdapter("recycler_data")
     fun <T> RecyclerView.setRecyclerData(data: MutableList<T>?) {
-        toBase<T>(adapter)?.apply {
+        adapter.toBase<T>()?.apply {
             this.data = data
             notifyDataSetChanged()
         }

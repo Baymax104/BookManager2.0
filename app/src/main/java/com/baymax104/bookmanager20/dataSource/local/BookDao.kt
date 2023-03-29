@@ -16,8 +16,11 @@ import com.baymax104.bookmanager20.entity.Book
 interface BookDao {
 
     @Insert
-    suspend fun insert(book: Book): Long
+    suspend fun insertProcess(book: Book): Long
 
-    @Query("select * from book order by tableRank asc")
-    suspend fun queryAll(): MutableList<Book>
+    @Query("select * from Book where progress < page order by tableRank asc")
+    suspend fun queryAllProcess(): MutableList<Book>
+
+    @Query("select * from Book where progress >= page order by tableRank asc")
+    suspend fun queryAllFinish(): MutableList<Book>
 }

@@ -40,8 +40,7 @@ class FinishFragment : Fragment() {
 
         binding.vm = vm
         val adapter = FinishAdapter()
-        adapter.data = vm.finishBooks.value
-        binding.bookList.adapter = adapter
+        binding.adapter = adapter
 
         vm.finishBooks.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {

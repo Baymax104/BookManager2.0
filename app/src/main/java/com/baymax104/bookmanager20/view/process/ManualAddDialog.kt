@@ -26,11 +26,13 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
     private val vm = ViewModelProvider(activity as MainActivity)[ProcessViewModel::class.java]
 
+    private lateinit var binding: DialogManualAddBinding
+
     override fun getImplLayoutId(): Int = R.layout.dialog_manual_add
 
     override fun onCreate() {
         super.onCreate()
-        val binding = DialogManualAddBinding.bind(popupImplView)
+        binding = DialogManualAddBinding.bind(popupImplView)
 
         binding.book = Book()
 
@@ -39,14 +41,12 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
         binding.setTakePhoto { Bus.postTag(this::class todo "takePhoto") }
 
         binding.setConfirm {
-            dismissWith {
-                mainLaunch {
-                    binding.book?.let {
-                        when (val state = vm.insertBook(it)) {
-                            is Success -> ToastUtils.showShort("添加成功")
-                            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
-                        }
-                    }
+            val book: Book? = binding.book
+            if (book != null && book.page <= 0) {
+                ToastUtils.showShort("页数必须大于0")
+            } else {
+                dismissWith {
+                    book?.let { insertBook(it) }
                     binding.book = Book()
                 }
             }
@@ -55,6 +55,13 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
         binding.setCancel {
             binding.book = Book()
             dismiss()
+        }
+    }
+
+    private fun insertBook(book: Book) = mainLaunch {
+        when (val state = vm.insertProcessBook(book)) {
+            is Success -> ToastUtils.showShort("添加成功")
+            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
         }
     }
 }
