@@ -38,11 +38,12 @@ class FinishFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.vm = vm
         val adapter = FinishAdapter()
+        adapter.data = vm.finishBooks.value
         binding.adapter = adapter
 
         vm.finishBooks.observe(viewLifecycleOwner) {
+            adapter.data = it
             if (it.isEmpty()) {
                 binding.state.showEmpty()
             }

@@ -7,9 +7,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.baymax104.bookmanager20.adapter.BaseAdapter
 import com.baymax104.bookmanager20.adapter.FragmentAdapter
 import com.baymax104.bookmanager20.entity.Book
 import com.blankj.utilcode.util.ConvertUtils
@@ -36,18 +34,6 @@ object DataBindingAdapter {
     fun ViewPager2.setFragmentAdapter(adapter: FragmentAdapter, fragments: List<Fragment>) {
         adapter.fragments = fragments
         this.adapter = adapter
-    }
-
-    private fun <T> RecyclerView.Adapter<RecyclerView.ViewHolder>?.toBase() =
-        this as? BaseAdapter<T>
-
-    @JvmStatic
-    @BindingAdapter("recycler_data")
-    fun <T> RecyclerView.setRecyclerData(data: MutableList<T>?) {
-        adapter.toBase<T>()?.apply {
-            this.data = data
-            notifyDataSetChanged()
-        }
     }
 
     @JvmStatic

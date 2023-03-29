@@ -71,18 +71,15 @@ class ProcessFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.vm = vm
         val adapter = ProcessAdapter()
+        adapter.data = vm.processBooks.value
         binding.adapter = adapter
-
-        adapter.onClick = {
-            ToastUtils.showShort(it.toString())
-        }
 
         binding.setAdd { addWayDialog.show() }
 
         // TODO 从缺省页切换回正常页面
         vm.processBooks.observe(viewLifecycleOwner) {
+            adapter.data = it
             if (it.isEmpty()) {
                 binding.state.showEmpty()
             } else {
