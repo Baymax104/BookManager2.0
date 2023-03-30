@@ -39,13 +39,15 @@ class FinishFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         val adapter = FinishAdapter()
-        adapter.data = vm.finishBooks.value
         binding.adapter = adapter
 
+        adapter.registerSource(vm.finishBooks)
+
         vm.finishBooks.observe(viewLifecycleOwner) {
-            adapter.data = it
-            if (it.isEmpty()) {
-                binding.state.showEmpty()
+            whole {
+                if (it.isEmpty()) {
+                    binding.state.showEmpty()
+                }
             }
         }
 

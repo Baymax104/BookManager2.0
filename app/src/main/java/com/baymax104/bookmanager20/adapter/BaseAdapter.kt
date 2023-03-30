@@ -7,6 +7,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
+import com.baymax104.bookmanager20.util.LiveList
 
 /**
  *@Description
@@ -21,11 +22,7 @@ abstract class BaseAdapter<E, B : ViewDataBinding>(
     val layoutId: Int
 ) : RecyclerView.Adapter<BaseAdapter.BaseViewHolder>() {
 
-    var data: MutableList<E>? = null
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private var source: List<E>? = null
 
     var onItemClick: (E) -> Unit = {}
 
@@ -40,10 +37,21 @@ abstract class BaseAdapter<E, B : ViewDataBinding>(
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val binding: B? = DataBindingUtil.getBinding(holder.itemView)
         val pos = holder.absoluteAdapterPosition
-        onBind(binding, data?.get(pos))
+        onBind(binding, source?.get(pos))
     }
 
-    override fun getItemCount(): Int = data?.size ?: 0
+    override fun getItemCount(): Int = source?.size ?: 0
+
+    fun registerSource(list: LiveList<E>) {
+        list.observe {
+            whole {
+                // 赋值引用，与原数据修改同步
+                source = it
+                notifyDataSetChanged()
+            }
+            add { index, _ -> notifyItemInserted(index) }
+        }
+    }
 
     abstract fun onBind(binding: B?, item: E?)
 }

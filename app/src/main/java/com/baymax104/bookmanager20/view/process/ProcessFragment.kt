@@ -72,25 +72,19 @@ class ProcessFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         val adapter = ProcessAdapter()
-        adapter.data = vm.processBooks.value
         binding.adapter = adapter
 
         binding.setAdd { addWayDialog.show() }
 
-        // TODO 从缺省页切换回正常页面
+        adapter.registerSource(vm.processBooks)
+
         vm.processBooks.observe(viewLifecycleOwner) {
-            adapter.data = it
-            if (it.isEmpty()) {
-                binding.state.showEmpty()
-            } else {
-                binding.state.showContent()
+            whole {
+                if (it.isEmpty()) {
+                    binding.state.showEmpty()
+                }
             }
-        }
-        vm.observerBuilder.observe {
-            add { index, _ ->
-                binding.bookList.scrollToPosition(index)
-                adapter.notifyItemInserted(index)
-            }
+            add { index, _ -> binding.bookList.scrollToPosition(index) }
         }
 
         vm.requestBook.observe(viewLifecycleOwner) { bookInfoDialog.show() }

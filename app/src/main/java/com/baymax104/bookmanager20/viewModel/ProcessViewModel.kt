@@ -8,8 +8,6 @@ import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.LiveList
 import com.baymax104.bookmanager20.util.MData
-import com.baymax104.bookmanager20.util.MLD
-import com.baymax104.bookmanager20.util.add
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -25,9 +23,7 @@ class ProcessViewModel @Inject constructor(
     private val repo: MainRepository
 ) : ViewModel() {
 
-    var observerBuilder = LiveList.Builder<Book>()
-
-    val processBooks: MLD<LiveList<Book>> = MLD()
+    val processBooks = LiveList(repo.processBooks)
 
     // 手动添加，拍照图片路径
     val photoUri: MData<String> = MData()
@@ -35,11 +31,6 @@ class ProcessViewModel @Inject constructor(
     // 扫码添加，请求返回的Book
     val requestBook: MData<Book> = MData()
 
-    init {
-        processBooks.addSource(repo.processBooks) {
-            processBooks.value = observerBuilder.bind(LiveList(it))
-        }
-    }
 
     suspend fun requestBookInfo(isbn: String): ResultState<Book> {
         return try {
@@ -63,6 +54,5 @@ class ProcessViewModel @Inject constructor(
             FAIL(e.message, e)
         }
     }
-
 
 }

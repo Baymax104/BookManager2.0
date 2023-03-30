@@ -1,147 +1,155 @@
 package com.baymax104.bookmanager20.util
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import kotlin.properties.Delegates
 
 /**
- *@Description
+ *@Description 异步数据源可观察列表
  *@Author John
  *@email
  *@Date 2023/3/25 14:12
  *@Version 1
  */
+typealias MData<T> = MutableLiveData<T>
+typealias LData<T> = LiveData<T>
+typealias MLD<T> = MediatorLiveData<T>
 
-typealias ListObserverList<T> = MutableList<ListObserver<T>>
+typealias ObserverList<T> = MutableList<ListObserver<T>>
 
+/**
+ * 使用观察者模式实现的单线程简易可观察列表
+ * 支持数据源与观察者异步设置，数据整体只能由设置的可观察数据源来改变
+ */
 @Suppress("unused")
-class LiveList<T>(override var size: Int) : AbstractMutableList<T>() {
+class LiveList<E>(observableSource: LData<MutableList<E>>) {
 
-    private val data: MutableList<T> = mutableListOf()
+    private var source: MutableList<E> = mutableListOf()
 
-    var observers: Map<EventType, ListObserverList<T>> = mutableMapOf(
+    private val observers: Map<EventType, ObserverList<E>> = mutableMapOf(
         Insert to mutableListOf(),
         Remove to mutableListOf(),
-        Set to mutableListOf()
+        Set to mutableListOf(),
+        Whole to mutableListOf()
     )
 
-    private var listEvent: ListEvent<T> by Delegates.observable(StaticEvent()) { _, _, event ->
+    val sourceObserver: MLD<Nothing> = MLD()
+
+    var lifecycleOwner: LifecycleOwner? = null
+        set(value) {
+            field = value
+            if (value != null && !sourceObserver.hasObservers()) {
+                sourceObserver.observe(value) {}
+            }
+        }
+
+    private var listEvent: ListEvent<E> by Delegates.observable(StaticEvent()) { _, _, event ->
         when (event) {
             is StaticEvent -> {}
             is InsertEvent -> observers[Insert]!!.forEach {
-                (it as InsertObserver).onAdd(
-                    event.index,
-                    event.value
-                )
+                (it as InsertObserver).onAdd(event.index, event.value)
             }
             is RemoveEvent -> observers[Remove]!!.forEach {
-                (it as RemoveObserver).onRemove(
-                    event.index,
-                    event.value
-                )
+                (it as RemoveObserver).onRemove(event.index, event.value)
             }
             is SetEvent -> observers[Set]!!.forEach {
-                (it as SetObserver).onUpdate(
-                    event.index,
-                    event.value
-                )
+                (it as SetObserver).onUpdate(event.index, event.value)
+            }
+            is WholeEvent -> observers[Whole]!!.forEach {
+                (it as WholeObserver).onChange(event.source)
             }
         }
     }
 
-    constructor() : this(0)
-
-    constructor(collection: Collection<T>) : this(collection.size) {
-        data.addAll(collection)
-    }
-
-
-    override fun add(element: T): Boolean {
-        val add = data.add(element)
-        if (add) {
-            size = data.size
-            listEvent = InsertEvent(size - 1, element)
+    init {
+        sourceObserver.addSource(observableSource) {
+            source = it
+            listEvent = WholeEvent(it)
         }
-        return add
     }
 
-    override fun add(index: Int, element: T) {
-        data.add(index, element)
+    constructor(observableSource: LData<MutableList<E>>, collection: Collection<E>) : this(
+        observableSource
+    ) {
+        source.addAll(collection)
+    }
+
+    fun add(element: E) {
+        source.add(element)
+        listEvent = InsertEvent(source.size - 1, element)
+    }
+
+    fun add(index: Int, element: E) {
+        source.add(index, element)
         listEvent = InsertEvent(index, element)
     }
 
-    override fun remove(element: T): Boolean {
-        val index = data.indexOf(element)
-        val remove = data.remove(element)
-        if (remove) {
-            size = data.size
+    fun remove(element: E): Boolean {
+        val index = source.indexOf(element)
+        return if (index == -1) {
+            false
+        } else {
+            source.remove(element)
             listEvent = RemoveEvent(index, element)
+            true
         }
-        return remove
     }
 
-    override fun removeAt(index: Int): T {
-        val value = data.removeAt(index)
-        size = data.size
+    fun removeAt(index: Int): E {
+        val value = source.removeAt(index)
         listEvent = RemoveEvent(index, value)
         return value
     }
 
-    override fun get(index: Int): T = data[index]
-
-    override fun set(index: Int, element: T): T {
-        val previous = data.set(index, element)
+    fun set(index: Int, element: E): E {
+        val previous = source.set(index, element)
         listEvent = SetEvent(index, previous)
         return previous
     }
 
-    fun observeAdd(onAdd: (index: Int, value: T) -> Unit): LiveList<T> {
-        observers[Insert]!!.add(InsertObserver(onAdd))
-        return this
+    fun get(index: Int): E = source[index]
+
+    fun size(): Int = source.size
+
+    inline fun observe(block: Observer.() -> Unit) = Observer().apply(block)
+
+    inline fun observe(owner: LifecycleOwner, block: Observer.() -> Unit) {
+        if (lifecycleOwner == null && !sourceObserver.hasObservers()) {
+            sourceObserver.observe(owner) {}
+        }
+        observe(block)
     }
 
-    fun observeRemove(onRemove: (index: Int, value: T) -> Unit): LiveList<T> {
-        observers[Remove]!!.add(RemoveObserver(onRemove))
-        return this
+
+    inner class Observer {
+        fun add(onAdd: (index: Int, value: E) -> Unit) {
+            observers[Insert]!!.add(InsertObserver(onAdd))
+        }
+
+        fun remove(onRemove: (index: Int, value: E) -> Unit) {
+            observers[Remove]!!.add(RemoveObserver(onRemove))
+        }
+
+        fun set(onUpdate: (index: Int, value: E) -> Unit) {
+            observers[Set]!!.add(SetObserver(onUpdate))
+        }
+
+        fun whole(onChange: (List<E>) -> Unit) {
+            observers[Whole]!!.add(WholeObserver(onChange))
+        }
     }
 
-    fun observeSet(onUpdate: (index: Int, value: T) -> Unit): LiveList<T> {
-        observers[Set]!!.add(SetObserver(onUpdate))
-        return this
-    }
-
-    fun removeObserver(observer: ListObserver<T>) {
+    fun removeObserver(observer: ListObserver<E>) {
         when (observer) {
             is InsertObserver -> observers[Insert]!!.remove(observer)
             is RemoveObserver -> observers[Remove]!!.remove(observer)
             is SetObserver -> observers[Set]!!.remove(observer)
+            is WholeObserver -> observers[Whole]!!.remove(observer)
         }
     }
 
-    class Builder<T> {
-
-        private val observers: Map<EventType, ListObserverList<T>> = mutableMapOf(
-            Insert to mutableListOf(),
-            Remove to mutableListOf(),
-            Set to mutableListOf()
-        )
-
-        fun add(onAdd: (index: Int, value: T) -> Unit) {
-            observers[Insert]!!.add(InsertObserver(onAdd))
-        }
-
-        fun remove(onRemove: (index: Int, value: T) -> Unit) {
-            observers[Remove]!!.add(RemoveObserver(onRemove))
-        }
-
-        fun set(onUpdate: (index: Int, value: T) -> Unit) {
-            observers[Set]!!.add(SetObserver(onUpdate))
-        }
-
-        fun bind(list: LiveList<T>) = list.apply {
-            observers = this@Builder.observers.toMap()
-        }
-
-        fun observe(block: Builder<T>.() -> Unit) = also(block)
-    }
 }
 
 sealed class EventType
@@ -149,6 +157,7 @@ object Static : EventType()
 object Insert : EventType()
 object Remove : EventType()
 object Set : EventType()
+object Whole : EventType()
 
 sealed class ListEvent<V>(
     var type: EventType
@@ -171,6 +180,10 @@ data class SetEvent<V>(
     val value: V
 ) : ListEvent<V>(Set)
 
+data class WholeEvent<V>(
+    val source: List<V>
+) : ListEvent<V>(Whole)
+
 
 sealed interface ListObserver<T>
 
@@ -184,4 +197,8 @@ class RemoveObserver<T>(
 
 class SetObserver<T>(
     val onUpdate: (Int, T) -> Unit
+) : ListObserver<T>
+
+class WholeObserver<T>(
+    val onChange: (List<T>) -> Unit
 ) : ListObserver<T>
