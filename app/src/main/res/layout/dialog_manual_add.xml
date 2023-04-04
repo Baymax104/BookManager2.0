@@ -5,21 +5,14 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-                name="book"
-                type="com.baymax104.bookmanager20.entity.Book" />
         <import type="android.view.View"/>
-        <import type="android.view.View.OnClickListener"/>
-        <variable
-                name="confirm"
-                type="OnClickListener" />
-        <variable
-                name="cancel"
-                type="OnClickListener" />
-        <variable
-                name="takePhoto"
-                type="OnClickListener" />
         <import type="android.text.InputType"/>
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.State" />
+        <variable
+                name="clickHandler"
+                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.ClickHandler" />
     </data>
 
     <LinearLayout
@@ -44,17 +37,17 @@
                 app:bl_corners_radius="10dp"
                 app:bl_solid_color="@color/bar_color"
                 tools:ignore="ContentDescription"
-                android:onClick="@{takePhoto}">
+                android:onClick="@{clickHandler::takePhoto}">
             <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    book_photo="@{book.photo}" />
+                    book_photo="@{state.book.photo}" />
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/camera"
-                    android:visibility="@{book.photo != null ? View.INVISIBLE : View.VISIBLE}"/>
+                    android:visibility="@{state.book.photo != null ? View.INVISIBLE : View.VISIBLE}"/>
         </FrameLayout>
 
         <include
@@ -64,9 +57,9 @@
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginVertical="10dp"
                 bind:hint="@{@string/input_name_hint}"
-                bind:handler="@{s->book.setName(s.toString())}"
+                bind:handler="@{s->state.book.setName(s.toString())}"
                 bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
-                bind:text="@{book.name}"/>
+                bind:text="@{state.book.name}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -75,9 +68,9 @@
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginBottom="10dp"
                 bind:hint="@{@string/input_author_hint}"
-                bind:handler="@{s->book.setAuthor(s.toString())}"
+                bind:handler="@{s->state.book.setAuthor(s.toString())}"
                 bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
-                bind:text="@{book.author}"/>
+                bind:text="@{state.book.author}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -86,9 +79,9 @@
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginBottom="20dp"
                 bind:hint="@{@string/input_page_hint}"
-                bind:handler="@{s->book.setPage(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"
+                bind:handler="@{s->state.book.setPage(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"
                 bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"
-                bind:text="@{book.page != 0 ? String.valueOf(book.page) : ``}"/>
+                bind:text="@{state.book.page != 0 ? String.valueOf(state.book.page) : ``}"/>
 
         <View
                 android:layout_width="match_parent"
@@ -97,8 +90,8 @@
 
         <include
                 layout="@layout/layout_dialog_button"
-                bind:confirm="@{confirm}"
-                bind:cancel="@{cancel}"/>
+                bind:confirm="@{clickHandler::confirm}"
+                bind:cancel="@{clickHandler::cancel}"/>
 
     </LinearLayout>
 </layout>

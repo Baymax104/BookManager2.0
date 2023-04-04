@@ -5,11 +5,14 @@
 
     <data>
         <variable
-                name="viewModel"
-                type="com.baymax104.bookmanager20.viewModel.MainViewModel" />
-        <variable
                 name="adapter"
                 type="com.baymax104.bookmanager20.adapter.FragmentAdapter" />
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.MainActivity.State" />
+        <variable
+                name="handler"
+                type="com.baymax104.bookmanager20.view.MainActivity.Handler" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -17,6 +20,7 @@
             android:layout_height="match_parent"
             tools:context=".view.MainActivity"
             android:id="@+id/drawer"
+            drawer_open="@={state.drawerOpen}"
             android:orientation="vertical"
             android:fitsSystemWindows="true">
 
@@ -33,10 +37,12 @@
 
                 <androidx.appcompat.widget.Toolbar
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tool_bar"
+                        android:layout_height="?actionBarSize"
+                        android:id="@+id/toolbar"
                         android:background="@color/bar_color"
                         android:fitsSystemWindows="true"
+                        app:navigationIcon="@drawable/left_nav"
+                        app:menu="@menu/toolbar"
                         app:layout_scrollFlags="scroll|enterAlways">
 
                     <TextView
@@ -44,9 +50,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/app_name"
                             android:layout_gravity="center"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black" />
+                            style="@style/ToolbarTitleStyle"/>
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
@@ -56,9 +60,10 @@
                     android:layout_weight="1"
                     android:id="@+id/view_pager"
                     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                    fragments="@{viewModel.fragments}"
-                    fragment_adapter="@{adapter}"/>
-
+                    viewPager_fragments="@{state.fragments}"
+                    viewPager_adapter="@{adapter}"
+                    viewPager_bindNavPageChange="@{nav}"
+                    viewPager_page="@{state.page}"/>
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                     android:layout_width="match_parent"
@@ -66,7 +71,9 @@
                     android:id="@+id/nav"
                     app:menu="@menu/main_nav"
                     android:background="@color/bar_color"
-                    app:elevation="10dp"/>
+                    app:elevation="10dp"
+                    bottomNavigation_onItemSelected="@{handler.mainNavListener}"
+                    bottomNavigation_page="@{state.page}"/>
 
         </LinearLayout>
 
@@ -75,7 +82,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:id="@+id/left_nav"
-                app:menu="@menu/left_nav" />
+                app:menu="@menu/left_nav"
+                navigation_onItemSelected="@{handler.leftNavItemListener}" />
 
 
     </androidx.drawerlayout.widget.DrawerLayout>

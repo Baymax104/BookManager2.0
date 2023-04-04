@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -9,7 +10,6 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -19,36 +19,33 @@
             <androidx.appcompat.widget.Toolbar
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:id="@+id/tool_bar"
+                    android:id="@+id/toolbar"
                     android:background="@color/bar_color"
-                    android:theme="@style/ThemeOverlay.AppCompat.Light"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                     app:layout_scrollFlags="scroll|snap|enterAlways">
 
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/edit"
-                        android:layout_gravity="center"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        style="@style/ToolbarTitleStyle"/>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/no_data_tip"
-                android:text="@string/no_data"
-                android:layout_gravity="center"
-                android:visibility="invisible" />
-
-        <androidx.recyclerview.widget.RecyclerView
+        <com.drake.statelayout.StateLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/book_list"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:empty_layout="@layout/layout_empty"
+                android:id="@+id/state">
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/book_list"
+                    tools:listitem="@layout/item_progress_book"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"/>
+        </com.drake.statelayout.StateLayout>
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -2,6 +2,7 @@ package com.baymax104.bookmanager20.view.process
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.baymax104.bookmanager20.dataSource.FAIL
 import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
 import com.baymax104.bookmanager20.util.*
+import com.baymax104.bookmanager20.viewModel.EditViewModel
 import com.baymax104.bookmanager20.viewModel.ProcessViewModel
 import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -37,6 +39,9 @@ class ProcessFragment : Fragment() {
     lateinit var binding: FragmentProgressBinding
 
     val vm: ProcessViewModel by activityViewModels()
+
+    @Inject
+    lateinit var editViewModel: EditViewModel
 
     @Inject
     lateinit var addWayDialog: AddWayDialog
@@ -74,9 +79,14 @@ class ProcessFragment : Fragment() {
         val adapter = ProcessAdapter()
         binding.adapter = adapter
 
+        Log.i("BM-Process", editViewModel.toString())
+
         binding.setAdd { addWayDialog.show() }
 
         adapter.registerSource(vm.processBooks)
+        adapter.onItemClick = {
+            ToastUtils.showShort(it.toString())
+        }
 
         vm.processBooks.observe(viewLifecycleOwner) {
             whole {

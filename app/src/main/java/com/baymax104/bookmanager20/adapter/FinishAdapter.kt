@@ -16,9 +16,11 @@ class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(R.layout.item_fin
     var isEdit = false
 
     override fun onBind(binding: ItemFinishBookBinding?, item: Book?) {
-        binding?.apply {
-            book = item
-            isEdit = this@FinishAdapter.isEdit
+        if (binding != null && item != null) {
+            binding.apply {
+                book = item
+                isEdit = this@FinishAdapter.isEdit
+            }
         }
     }
 }

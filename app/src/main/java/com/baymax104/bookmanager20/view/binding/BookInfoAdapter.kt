@@ -1,15 +1,11 @@
-package com.baymax104.bookmanager20.util
+package com.baymax104.bookmanager20.view.binding
 
 import android.widget.ImageView
-import android.widget.ImageView.ScaleType
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import androidx.databinding.BindingConversion
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.baymax104.bookmanager20.adapter.FragmentAdapter
 import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.util.DateFormatter
 import com.blankj.utilcode.util.ConvertUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -23,19 +19,11 @@ import java.util.*
  *@Description
  *@Author John
  *@email
- *@Date 2023/3/18 23:41
+ *@Date 2023/4/4 16:19
  *@Version 1
  */
 @Suppress("unchecked_cast", "NotifyDataSetChanged", "SetTextI18n")
-object DataBindingAdapter {
-
-    @JvmStatic
-    @BindingAdapter("fragment_adapter", "fragments")
-    fun ViewPager2.setFragmentAdapter(adapter: FragmentAdapter, fragments: List<Fragment>) {
-        adapter.fragments = fragments
-        this.adapter = adapter
-    }
-
+object BookInfoAdapter {
     @JvmStatic
     @BindingAdapter("book_finish_time")
     fun TextView.setFinishTime(book: Book) {
@@ -56,11 +44,17 @@ object DataBindingAdapter {
     }
 
     @JvmStatic
+    @BindingAdapter("book_date")
+    fun TextView.setBookDate(date: Date?) {
+        text = date?.let { DateFormatter.format(date) }
+    }
+
+    @JvmStatic
     @BindingAdapter("book_photo", "book_photo_scaleType", requireAll = false)
-    fun ImageView.setBookPhoto(uriPath: String?, scaleType: ScaleType?) {
+    fun ImageView.setBookPhoto(uriPath: String?, scaleType: ImageView.ScaleType?) {
         val scale = when (scaleType) {
-            ScaleType.FIT_CENTER -> FitCenter()
-            ScaleType.CENTER_INSIDE -> CenterInside()
+            ImageView.ScaleType.FIT_CENTER -> FitCenter()
+            ImageView.ScaleType.CENTER_INSIDE -> CenterInside()
             else -> CenterCrop()
         }
         val options = RequestOptions()
@@ -72,9 +66,4 @@ object DataBindingAdapter {
             .apply(options)
             .into(this)
     }
-
-    @JvmStatic
-    @BindingConversion
-    fun convertDateToString(date: Date?): String? = date?.let { DateFormatter.format(it) }
-
 }

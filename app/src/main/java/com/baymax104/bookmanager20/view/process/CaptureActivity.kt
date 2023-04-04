@@ -66,13 +66,11 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val toolBar = findViewById<Toolbar>(R.id.tool_bar)
+        val toolBar = findViewById<Toolbar>(R.id.toolbar)
         immersive(toolBar)
         setFullscreen(true)
         setSupportActionBar(toolBar)
-        supportActionBar?.apply {
-            setDisplayShowTitleEnabled(false)
-        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

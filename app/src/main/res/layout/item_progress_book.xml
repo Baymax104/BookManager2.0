@@ -73,7 +73,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:textColor="@color/gray"
-                                android:text="@{book.startTime}" />
+                                book_date="@{book.startTime}" />
                     </RelativeLayout>
                 </LinearLayout>
 

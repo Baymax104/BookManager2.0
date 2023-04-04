@@ -77,8 +77,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="5dp"
                         android:visibility="@{isEdit ? View.VISIBLE : View.INVISIBLE}"
-                        android:src="@drawable/sort"
-                         />
+                        android:src="@drawable/sort" />
             </LinearLayout>
 
             <LinearLayout
