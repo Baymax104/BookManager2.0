@@ -1,7 +1,9 @@
 package com.baymax104.bookmanager20.repository
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import androidx.room.Room
+import com.baymax104.bookmanager20.dataSource.local.Database
+import com.baymax104.bookmanager20.dataSource.local.LocalDatabase
 
 /**
  *@Description
@@ -10,5 +12,13 @@ import dagger.hilt.android.HiltAndroidApp
  *@Date 2023/3/23 21:50
  *@Version 1
  */
-@HiltAndroidApp
-class AppApplication : Application()
+class AppApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Database = Room.databaseBuilder(
+            this,
+            LocalDatabase::class.java,
+            LocalDatabase.DatabaseName
+        ).build()
+    }
+}

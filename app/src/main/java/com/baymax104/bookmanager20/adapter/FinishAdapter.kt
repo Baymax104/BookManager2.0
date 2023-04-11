@@ -11,16 +11,16 @@ import com.baymax104.bookmanager20.entity.Book
  *@Date 2023/3/19 22:27
  *@Version 1
  */
-class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(R.layout.item_finish_book) {
+class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(
+    R.layout.item_finish_book,
+    { old, new -> old.id == new.id },
+    { old, new -> old == new }
+) {
 
     var isEdit = false
 
-    override fun onBind(binding: ItemFinishBookBinding?, item: Book?) {
-        if (binding != null && item != null) {
-            binding.apply {
-                book = item
-                isEdit = this@FinishAdapter.isEdit
-            }
-        }
+    override fun onBind(binding: ItemFinishBookBinding, item: Book) {
+        binding.book = item
+        binding.isEdit = isEdit
     }
 }

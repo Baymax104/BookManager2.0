@@ -3,7 +3,6 @@ package com.baymax104.bookmanager20.entity
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.util.PageDeserializer
@@ -23,11 +22,7 @@ import java.util.*
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Book(
-    @JsonIgnore
-    @Ignore
-    val builder: Builder
-) : BaseObservable() {
+class Book(builder: Builder) : BaseObservable() {
 
     @JsonIgnore
     @PrimaryKey(autoGenerate = true)
@@ -118,11 +113,6 @@ data class Book(
 
     companion object {
         inline fun build(block: Builder.() -> Unit = {}) = Builder().apply(block).build()
-
-        /**
-         * 使用book.copy()复制，若book==null，则使用默认Builder构造
-         */
-        fun copyNotNull(book: Book?) = book?.copy() ?: Builder().build()
     }
 
     class Builder {
@@ -143,5 +133,38 @@ data class Book(
 
     override fun toString(): String {
         return "Book(name='$name', page=$page, author=$author, progress=$progress, startTime=$startTime, endTime=$endTime, photo=$photo, publisher=$publisher, description=$description, isbn=$isbn, tableRank=$tableRank)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Book
+        if (id != other.id) return false
+        if (name != other.name) return false
+        if (page != other.page) return false
+        if (author != other.author) return false
+        if (progress != other.progress) return false
+        if (startTime != other.startTime) return false
+        if (endTime != other.endTime) return false
+        if (photo != other.photo) return false
+        if (isbn != other.isbn) return false
+        if (tableRank != other.tableRank) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + page
+        result = 31 * result + (author?.hashCode() ?: 0)
+        result = 31 * result + progress
+        result = 31 * result + (startTime?.hashCode() ?: 0)
+        result = 31 * result + (endTime?.hashCode() ?: 0)
+        result = 31 * result + (photo?.hashCode() ?: 0)
+        result = 31 * result + (isbn?.hashCode() ?: 0)
+        result = 31 * result + tableRank
+        return result
     }
 }

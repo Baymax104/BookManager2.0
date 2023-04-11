@@ -1,7 +1,7 @@
 package com.baymax104.bookmanager20.architecture.view
 
 import android.util.SparseArray
-import androidx.lifecycle.ViewModel
+import com.baymax104.bookmanager20.architecture.domain.StateHolder
 
 /**
  *@Description
@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModel
 data class DataBindingConfig(
     val layout: Int,
     val vmId: Int,
-    val stateVM: ViewModel
+    val state: StateHolder
 ) {
     val params: SparseArray<Any> = SparseArray()
 

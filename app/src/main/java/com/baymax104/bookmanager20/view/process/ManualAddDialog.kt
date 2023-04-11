@@ -1,22 +1,20 @@
 package com.baymax104.bookmanager20.view.process
 
 import android.content.Context
-import android.view.View
-import androidx.lifecycle.ViewModel
+import android.view.View.OnClickListener
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
+import com.baymax104.bookmanager20.architecture.domain.State
+import com.baymax104.bookmanager20.architecture.domain.StateHolder
+import com.baymax104.bookmanager20.architecture.domain.activityViewModels
+import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.bind
-import com.baymax104.bookmanager20.architecture.view.viewModelScope
 import com.baymax104.bookmanager20.dataSource.FAIL
 import com.baymax104.bookmanager20.dataSource.Success
-import com.baymax104.bookmanager20.databinding.DialogManualAddBinding
+import com.baymax104.bookmanager20.domain.ProcessMessenger
+import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.util.Bus
-import com.baymax104.bookmanager20.util.MData
 import com.baymax104.bookmanager20.util.mainLaunch
-import com.baymax104.bookmanager20.util.todo
-import com.baymax104.bookmanager20.viewModel.ProcessViewModel
 import com.blankj.utilcode.util.ToastUtils
 import com.lxj.xpopup.core.BottomPopupView
 
@@ -29,38 +27,31 @@ import com.lxj.xpopup.core.BottomPopupView
  */
 class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
-    private val vm: ProcessViewModel = viewModelScope.getActivityViewModel(activity)
+    private val messenger: ProcessMessenger by applicationViewModels()
 
-    private var binding: DialogManualAddBinding? = null
+    private val requester: ProcessRequester by activityViewModels()
 
-    object State : ViewModel() {
-        val book: MData<Book> = MData(Book())
+    object States : StateHolder() {
+        val book = State(Book())
     }
 
     override fun getImplLayoutId(): Int = R.layout.dialog_manual_add
 
     override fun onCreate() {
         super.onCreate()
-        val config = DataBindingConfig(R.layout.dialog_manual_add, BR.state, State)
-            .add(BR.clickHandler to ClickHandler())
-        binding = bind(config)
+        bind(BR.state to States, BR.handler to Handler())
 
-        vm.photoUri.observe(this) { State.book.value?.apply { photo = it } }
-    }
-
-    private fun insertBook(book: Book) = mainLaunch {
-        when (val state = vm.insertProcessBook(book)) {
-            is Success -> ToastUtils.showShort("添加成功")
-            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
+        messenger.photoUri.observeReply(this) {
+            States.book.value.photo = it
         }
     }
 
+    inner class Handler {
 
-    inner class ClickHandler {
-        fun takePhoto(v: View): Unit = Bus.postTag(ManualAddDialog::class todo "takePhoto")
+        val takePhoto = OnClickListener { messenger.photoUri.post() }
 
-        fun confirm(v: View) {
-            val book = State.book.value ?: return
+        val confirm = OnClickListener {
+            val book = States.book.value
             if (book.page <= 0) {
                 ToastUtils.showShort("页数必须大于0")
             } else {
@@ -68,19 +59,14 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
             }
         }
 
-        fun cancel(v: View) {
-            dismiss()
+        val cancel = OnClickListener { dismiss() }
+    }
+
+
+    private fun insertBook(book: Book) = mainLaunch {
+        when (val state = requester.insertProcessBook(book)) {
+            is Success -> ToastUtils.showShort("添加成功")
+            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
         }
-    }
-
-    override fun onDismiss() {
-        super.onDismiss()
-        State.book.value = Book()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        binding?.unbind()
-        binding = null
     }
 }

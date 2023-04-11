@@ -1,20 +1,24 @@
 package com.baymax104.bookmanager20.view.process
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
+import android.view.View.OnClickListener
+import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
+import com.baymax104.bookmanager20.architecture.domain.State
+import com.baymax104.bookmanager20.architecture.domain.StateHolder
+import com.baymax104.bookmanager20.architecture.domain.activityViewModels
+import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
+import com.baymax104.bookmanager20.architecture.view.bind
 import com.baymax104.bookmanager20.dataSource.FAIL
 import com.baymax104.bookmanager20.dataSource.Success
-import com.baymax104.bookmanager20.databinding.DialogBookInfoBinding
+import com.baymax104.bookmanager20.domain.ProcessMessenger
+import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.util.ImageUtil
 import com.baymax104.bookmanager20.util.mainLaunch
-import com.baymax104.bookmanager20.view.MainActivity
-import com.baymax104.bookmanager20.viewModel.ProcessViewModel
+import com.baymax104.bookmanager20.util.showOnce
 import com.blankj.utilcode.util.ToastUtils
 import com.lxj.xpopup.core.BottomPopupView
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 /**
  *@Description
@@ -23,38 +27,46 @@ import javax.inject.Inject
  *@Date 2023/3/22 13:00
  *@Version 1
  */
-@AndroidEntryPoint
 class BookInfoDialog(context: Context) : BottomPopupView(context) {
 
-    private val vm = ViewModelProvider(activity as MainActivity)[ProcessViewModel::class.java]
+    private val messenger: ProcessMessenger by applicationViewModels()
 
-    @Inject
-    lateinit var modifyInfoDialog: ModifyInfoDialog
+    private val requester: ProcessRequester by activityViewModels()
+
+    object States : StateHolder() {
+        val book = State(Book())
+    }
 
     override fun getImplLayoutId(): Int = R.layout.dialog_book_info
 
     override fun onCreate() {
         super.onCreate()
-        val binding = DialogBookInfoBinding.bind(popupImplView)
-        binding.lifecycleOwner = this
+        bind(BR.state to States, BR.handler to Handler())
 
-        vm.requestBook.observe(this) { binding.book = it }
+        messenger.apply {
 
-        binding.setModify { modifyInfoDialog.show() }
+            requestBook.observeReply(this@BookInfoDialog) { States.book.value = it }
 
-        binding.setConfirm {
+            modifyBook.observeSend(this@BookInfoDialog) { States.book.value = it }
+        }
+    }
+
+    inner class Handler {
+        val modify = OnClickListener { activity showOnce ModifyInfoDialog(activity) }
+
+        val confirm = OnClickListener {
             dismissWith {
-                val book: Book? = binding.book
-                if (book == null) {
-                    ToastUtils.showShort("添加为空")
+                val book = States.book.value
+                if (book.page == 0) {
+                    ToastUtils.showShort("页数必须大于0")
                     return@dismissWith
                 }
                 mainLaunch {
-                    book.photo?.let {
+                    book.photo = book.photo?.let {
                         val file = ImageUtil.download(activity, it)
-                        book.photo = file?.absolutePath
+                        file?.absolutePath ?: it
                     }
-                    when (val state = vm.insertProcessBook(book)) {
+                    when (val state = requester.insertProcessBook(book)) {
                         is Success -> ToastUtils.showShort("添加成功")
                         is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
                     }
@@ -62,6 +74,6 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
             }
         }
 
-        binding.setCancel { dismiss() }
+        val cancel = OnClickListener { dismiss() }
     }
 }

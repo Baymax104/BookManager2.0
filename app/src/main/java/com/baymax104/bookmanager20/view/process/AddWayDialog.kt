@@ -1,11 +1,13 @@
 package com.baymax104.bookmanager20.view.process
 
 import android.content.Context
+import android.view.View.OnClickListener
+import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.databinding.DialogAddWayBinding
+import com.baymax104.bookmanager20.architecture.view.bind
+import com.baymax104.bookmanager20.util.showOnce
+import com.baymax104.bookmanager20.util.start
 import com.lxj.xpopup.core.CenterPopupView
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 /**
  *@Description
@@ -14,22 +16,22 @@ import javax.inject.Inject
  *@Date 2023/3/20 10:41
  *@Version 1
  */
-@AndroidEntryPoint
 class AddWayDialog(context: Context) : CenterPopupView(context) {
-
-    @Inject
-    lateinit var manualAddDialog: ManualAddDialog
 
     override fun getImplLayoutId(): Int = R.layout.dialog_add_way
 
     override fun onCreate() {
         super.onCreate()
-        val binding = DialogAddWayBinding.bind(popupImplView)
-        binding.lifecycleOwner = this
+        bind(BR.handler to Handler())
+    }
 
-        binding.setScan { dismissWith { CaptureActivity.actionStart(context) } }
-
-        binding.setManual { dismissWith { manualAddDialog.show() } }
+    inner class Handler {
+        val scan = OnClickListener {
+            dismissWith { activity start CaptureActivity::class }
+        }
+        val manual = OnClickListener {
+            dismissWith { activity showOnce ManualAddDialog(activity) }
+        }
     }
 
 }

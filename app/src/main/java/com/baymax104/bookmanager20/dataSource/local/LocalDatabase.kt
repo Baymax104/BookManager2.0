@@ -22,3 +22,5 @@ abstract class LocalDatabase : RoomDatabase() {
 
     abstract fun bookDao(): BookDao
 }
+
+lateinit var Database: LocalDatabase

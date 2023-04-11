@@ -6,19 +6,12 @@
 
     <data>
         <variable
-                name="book"
-                type="com.baymax104.bookmanager20.entity.Book" />
-        <import type="android.view.View.OnClickListener"/>
+                name="state"
+                type="com.baymax104.bookmanager20.view.process.BookInfoDialog.States" />
         <variable
-                name="confirm"
-                type="OnClickListener" />
-        <variable
-                name="cancel"
-                type="OnClickListener" />
+                name="handler"
+                type="com.baymax104.bookmanager20.view.process.BookInfoDialog.Handler" />
         <import type="android.widget.ImageView.ScaleType"/>
-        <variable
-                name="modify"
-                type="OnClickListener" />
     </data>
 
     <LinearLayout
@@ -41,7 +34,7 @@
                 android:layout_height="200dp"
                 android:id="@+id/book_cover"
                 android:layout_gravity="center_horizontal"
-                book_photo="@{book.photo}"
+                book_photo="@{state.book.photo}"
                 book_photo_scaleType="@{ScaleType.FIT_CENTER}"/>
 
         <LinearLayout
@@ -54,14 +47,14 @@
                 app:bl_stroke_color="@color/border_color"
                 app:bl_corners_radius="15dp"
                 app:bl_solid_color="@color/bar_color"
-                android:onClick="@{modify}">
+                android:onClick="@{handler.modify}">
 
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:maxLines="1"
-                    android:text="@{`书名：` + book.name}"
+                    android:text="@{`书名：` + state.book.name}"
                     style="@style/BookInfoTextStyle"/>
 
             <TextView
@@ -69,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_marginBottom="4dp"
-                    android:text="@{`作者：` + book.author}"
+                    android:text="@{`作者：` + state.book.author}"
                     style="@style/BookInfoTextStyle"/>
 
             <TextView
@@ -77,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_marginBottom="4dp"
-                    android:text="@{`出版社：` + book.publisher}"
+                    android:text="@{`出版社：` + state.book.publisher}"
                     style="@style/BookInfoTextStyle"/>
 
             <TextView
@@ -85,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_marginBottom="4dp"
-                    android:text="@{String.format(`页数：%d页`, book.page)}"
+                    android:text="@{String.format(`页数：%d页`, state.book.page)}"
                     style="@style/BookInfoTextStyle"/>
 
             <TextView
@@ -93,14 +86,14 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_marginBottom="4dp"
-                    android:text="@{`ISBN：` + book.isbn}"
+                    android:text="@{`ISBN：` + state.book.isbn}"
                     style="@style/BookInfoTextStyle"/>
 
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="10"
-                    android:text="@{`图书介绍：` + book.description}"
+                    android:text="@{`图书介绍：` + state.book.description}"
                     style="@style/BookInfoTextStyle"/>
 
         </LinearLayout>
@@ -121,8 +114,8 @@
 
         <include
                 layout="@layout/layout_dialog_button"
-                bind:confirm="@{confirm}"
-                bind:cancel="@{cancel}"/>
+                bind:confirm="@{handler.confirm}"
+                bind:cancel="@{handler.cancel}"/>
     </LinearLayout>
 
 </layout>

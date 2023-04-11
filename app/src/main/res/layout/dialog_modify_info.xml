@@ -5,15 +5,11 @@
     <data>
         <import type="android.text.InputType"/>
         <variable
-                name="book"
-                type="com.baymax104.bookmanager20.entity.Book" />
-        <import type="android.view.View.OnClickListener"/>
+                name="state"
+                type="com.baymax104.bookmanager20.view.process.ModifyInfoDialog.States" />
         <variable
-                name="confirm"
-                type="OnClickListener" />
-        <variable
-                name="cancel"
-                type="OnClickListener" />
+                name="handler"
+                type="com.baymax104.bookmanager20.view.process.ModifyInfoDialog.Handler" />
     </data>
 
     <LinearLayout
@@ -38,8 +34,8 @@
                 android:layout_marginVertical="10dp"
                 bind:hint="@{@string/book_name}"
                 bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
-                bind:text="@{book.name}"
-                bind:handler="@{s->book.setName(s.toString())}"/>
+                bind:text="@{state.book.name}"
+                bind:handler="@{s->state.book.setName(s.toString())}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -49,8 +45,8 @@
                 android:layout_marginBottom="10dp"
                 bind:hint="@{@string/book_author}"
                 bind:inputType="@{InputType.TYPE_CLASS_TEXT}"
-                bind:text="@{book.author}"
-                bind:handler="@{s->book.setAuthor(s.toString())}"/>
+                bind:text="@{state.book.author}"
+                bind:handler="@{s->state.book.setAuthor(s.toString())}"/>
 
         <include
                 layout="@layout/layout_edit"
@@ -60,8 +56,8 @@
                 android:layout_marginBottom="20dp"
                 bind:hint="@{@string/book_page}"
                 bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"
-                bind:text="@{book.page != 0 ? String.valueOf(book.page) : ``}"
-                bind:handler="@{s->book.setPage(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"/>
+                bind:text="@{state.book.page != 0 ? String.valueOf(state.book.page) : ``}"
+                bind:handler="@{s->state.book.setPage(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"/>
 
         <View
                 android:layout_width="match_parent"
@@ -70,8 +66,8 @@
 
         <include
                 layout="@layout/layout_dialog_button"
-                bind:confirm="@{confirm}"
-                bind:cancel="@{cancel}"/>
+                bind:confirm="@{handler.confirm}"
+                bind:cancel="@{handler.cancel}"/>
 
     </LinearLayout>
 

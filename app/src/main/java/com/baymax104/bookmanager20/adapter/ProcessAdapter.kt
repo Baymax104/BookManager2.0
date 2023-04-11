@@ -11,17 +11,17 @@ import com.baymax104.bookmanager20.entity.Book
  *@Date 2023/3/19 20:46
  *@Version 1
  */
-class ProcessAdapter : BaseAdapter<Book, ItemProgressBookBinding>(R.layout.item_progress_book) {
+class ProcessAdapter : BaseAdapter<Book, ItemProgressBookBinding>(
+    R.layout.item_progress_book,
+    { old, new -> old.id == new.id },
+    { old, new -> old == new }
+) {
 
     var isEdit = false
 
-    override fun onBind(binding: ItemProgressBookBinding?, item: Book?) {
-        if (binding != null && item != null) {
-            binding.apply {
-                book = item
-                isEdit = this@ProcessAdapter.isEdit
-                root.setOnClickListener { onItemClick(item) }
-            }
-        }
+    override fun onBind(binding: ItemProgressBookBinding, item: Book) {
+        binding.book = item
+        binding.isEdit = isEdit
+        binding.root.setOnClickListener { onItemClick(item) }
     }
 }

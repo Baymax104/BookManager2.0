@@ -8,8 +8,11 @@
                 name="adapter"
                 type="com.baymax104.bookmanager20.adapter.ProcessAdapter" />
         <variable
-                name="add"
-                type="android.view.View.OnClickListener" />
+                name="handler"
+                type="com.baymax104.bookmanager20.view.process.ProcessFragment.Handler" />
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.process.ProcessFragment.States" />
     </data>
 
     <FrameLayout
@@ -20,6 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:empty_layout="@layout/layout_empty"
+                state_hasContent="@{state.hasContent}"
                 android:id="@+id/state">
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
@@ -28,7 +32,8 @@
                     tools:listitem="@layout/item_progress_book"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
-                    android:adapter="@{adapter}" />
+                    android:adapter="@{adapter}"
+                    recycler_data="@{state.books}"/>
 
         </com.drake.statelayout.StateLayout>
 
@@ -46,6 +51,6 @@
                 app:fab_showShadow="true"
                 app:fab_shadowXOffset="2dp"
                 app:fab_shadowYOffset="2dp"
-                android:onClick="@{add}"/>
+                android:onClick="@{handler.add}"/>
     </FrameLayout>
 </layout>

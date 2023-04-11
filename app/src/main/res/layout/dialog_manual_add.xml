@@ -9,10 +9,10 @@
         <import type="android.text.InputType"/>
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.State" />
+                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.States" />
         <variable
-                name="clickHandler"
-                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.ClickHandler" />
+                name="handler"
+                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.Handler" />
     </data>
 
     <LinearLayout
@@ -37,7 +37,7 @@
                 app:bl_corners_radius="10dp"
                 app:bl_solid_color="@color/bar_color"
                 tools:ignore="ContentDescription"
-                android:onClick="@{clickHandler::takePhoto}">
+                android:onClick="@{handler.takePhoto}">
             <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -90,8 +90,8 @@
 
         <include
                 layout="@layout/layout_dialog_button"
-                bind:confirm="@{clickHandler::confirm}"
-                bind:cancel="@{clickHandler::cancel}"/>
+                bind:confirm="@{handler.confirm}"
+                bind:cancel="@{handler.cancel}"/>
 
     </LinearLayout>
 </layout>

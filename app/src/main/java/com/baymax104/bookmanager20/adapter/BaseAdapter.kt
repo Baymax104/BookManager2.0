@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.baymax104.bookmanager20.util.LiveList
 
 /**
  *@Description
@@ -17,12 +18,14 @@ import com.baymax104.bookmanager20.util.LiveList
  *@Version 1
  */
 @Suppress("NotifyDataSetChanged")
-abstract class BaseAdapter<E, B : ViewDataBinding>(
-    @LayoutRes
-    val layoutId: Int
-) : RecyclerView.Adapter<BaseAdapter.BaseViewHolder>() {
-
-    private var source: List<E>? = null
+abstract class BaseAdapter<E : Any, B : ViewDataBinding>(
+    @LayoutRes val layoutId: Int,
+    areItemsSame: (old: E, new: E) -> Boolean,
+    areContentsSame: (old: E, new: E) -> Boolean
+) : ListAdapter<E, BaseAdapter.BaseViewHolder>(object : DiffUtil.ItemCallback<E>() {
+    override fun areItemsTheSame(oldItem: E, newItem: E) = areItemsSame(oldItem, newItem)
+    override fun areContentsTheSame(oldItem: E, newItem: E) = areContentsSame(oldItem, newItem)
+}) {
 
     var onItemClick: (E) -> Unit = {}
 
@@ -37,21 +40,14 @@ abstract class BaseAdapter<E, B : ViewDataBinding>(
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val binding: B? = DataBindingUtil.getBinding(holder.itemView)
         val pos = holder.absoluteAdapterPosition
-        onBind(binding, source?.get(pos))
-    }
-
-    override fun getItemCount(): Int = source?.size ?: 0
-
-    fun registerSource(list: LiveList<E>) {
-        list.observe {
-            whole {
-                // 赋值引用，与原数据修改同步
-                source = it
-                notifyDataSetChanged()
-            }
-            add { index, _ -> notifyItemInserted(index) }
+        val data = currentList[pos]
+        if (binding != null && data != null) {
+            onBind(binding, data)
+            binding.executePendingBindings()
         }
     }
 
-    abstract fun onBind(binding: B?, item: E?)
+    override fun getItemCount(): Int = currentList.size
+
+    abstract fun onBind(binding: B, item: E)
 }

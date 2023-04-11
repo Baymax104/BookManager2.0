@@ -44,7 +44,7 @@ object ImageUtil {
         return file
     }
 
-    fun compress(context: Context, path: String, onSuccess: (File?) -> Unit) {
+    fun compress(context: Context, path: String, onSuccess: (File) -> Unit) {
         val parent = PathUtils.getExternalAppFilesPath()
         Luban.with(context)
             .load(path)
@@ -54,7 +54,13 @@ object ImageUtil {
             .setCompressListener(object : OnCompressListener {
                 override fun onStart() {}
 
-                override fun onSuccess(file: File?) = onSuccess(file)
+                override fun onSuccess(file: File?) {
+                    if (file == null) {
+                        ToastUtils.showShort("图片压缩错误")
+                        return
+                    }
+                    onSuccess(file)
+                }
 
                 override fun onError(e: Throwable?) {
                     ToastUtils.showShort("图片压缩失败：$e")

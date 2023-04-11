@@ -1,15 +1,11 @@
-package com.baymax104.bookmanager20.viewModel
+package com.baymax104.bookmanager20.domain
 
-import androidx.lifecycle.ViewModel
+import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.dataSource.FAIL
 import com.baymax104.bookmanager20.dataSource.ResultState
 import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
-import com.baymax104.bookmanager20.util.LiveList
-import com.baymax104.bookmanager20.util.MData
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 /**
  *@Description
@@ -18,19 +14,20 @@ import javax.inject.Inject
  *@Date 2023/3/19 11:53
  *@Version 1
  */
-@HiltViewModel
-class ProcessViewModel @Inject constructor(
-    private val repo: MainRepository
-) : ViewModel() {
-
-    val processBooks = LiveList(repo.processBooks)
-
+class ProcessMessenger : Messenger() {
     // 手动添加，拍照图片路径
-    val photoUri: MData<String> = MData()
+    val photoUri = Replier<String>()
 
     // 扫码添加，请求返回的Book
-    val requestBook: MData<Book> = MData()
+    val requestBook = EventState<String, Book>()
 
+    // 修改对话框修改后返回Book
+    val modifyBook = Sender<Book>()
+}
+
+class ProcessRequester : Requester() {
+
+    val repo = MainRepository
 
     suspend fun requestBookInfo(isbn: String): ResultState<Book> {
         return try {
@@ -48,8 +45,16 @@ class ProcessViewModel @Inject constructor(
         return try {
             val i = repo.insertProcessBook(book)
             book.id = i.toInt()
-            processBooks.add(book)
             Success(null)
+        } catch (e: Exception) {
+            FAIL(e.message, e)
+        }
+    }
+
+    suspend fun queryAllBook(): ResultState<List<Book>> {
+        return try {
+            val books = repo.queryAllProcessBook()
+            Success(books)
         } catch (e: Exception) {
             FAIL(e.message, e)
         }

@@ -7,6 +7,9 @@
         <variable
                 name="adapter"
                 type="com.baymax104.bookmanager20.adapter.FinishAdapter" />
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.finish.FinishFragment.States" />
     </data>
 
     <com.drake.statelayout.StateLayout
@@ -23,7 +26,8 @@
                 tools:listitem="@layout/item_finish_book"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="vertical"
-                android:adapter="@{adapter}" />
+                android:adapter="@{adapter}"
+                recycler_data="@{state.books}"/>
 
     </com.drake.statelayout.StateLayout>
 </layout>

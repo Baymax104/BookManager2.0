@@ -1,15 +1,16 @@
 package com.baymax104.bookmanager20.view.finish
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import com.baymax104.bookmanager20.BR
+import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.adapter.FinishAdapter
-import com.baymax104.bookmanager20.databinding.FragmentFinishBinding
-import com.baymax104.bookmanager20.viewModel.FinishViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import com.baymax104.bookmanager20.architecture.domain.State
+import com.baymax104.bookmanager20.architecture.domain.StateHolder
+import com.baymax104.bookmanager20.architecture.domain.fragmentViewModels
+import com.baymax104.bookmanager20.architecture.view.BaseFragment
+import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
+import com.baymax104.bookmanager20.entity.Book
 
 /**
  *@Description
@@ -18,38 +19,21 @@ import dagger.hilt.android.AndroidEntryPoint
  *@Date 2023/3/18 22:56
  *@Version 1
  */
-@AndroidEntryPoint
-class FinishFragment : Fragment() {
+class FinishFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentFinishBinding
+    private val states: States by fragmentViewModels()
 
-    private val vm: FinishViewModel by activityViewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentFinishBinding.inflate(inflater, container, false)
-        return binding.root
+    class States : StateHolder() {
+        val books = State(listOf<Book>())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = viewLifecycleOwner
-
-        val adapter = FinishAdapter()
-        binding.adapter = adapter
-
-        adapter.registerSource(vm.finishBooks)
-
-        vm.finishBooks.observe(viewLifecycleOwner) {
-            whole {
-                if (it.isEmpty()) {
-                    binding.state.showEmpty()
-                }
-            }
-        }
 
     }
+
+    override fun configureBinding() = DataBindingConfig(R.layout.fragment_finish, BR.state, states)
+        .add(
+            BR.adapter to FinishAdapter()
+        )
 }

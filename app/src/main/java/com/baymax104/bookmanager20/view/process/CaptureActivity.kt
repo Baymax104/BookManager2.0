@@ -1,13 +1,11 @@
 package com.baymax104.bookmanager20.view.process
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.util.Bus
-import com.baymax104.bookmanager20.util.todo
+import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
+import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.drake.statusbar.immersive
 import com.drake.statusbar.setFullscreen
 import com.google.zxing.BarcodeFormat
@@ -33,11 +31,7 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
         DecodeHintType.CHARACTER_SET to "UTF-8"
     )
 
-    companion object {
-        fun actionStart(context: Context) {
-            context.startActivity(Intent(context, CaptureActivity::class.java))
-        }
-    }
+    private val messenger: ProcessMessenger by applicationViewModels()
 
     override fun initCameraScan() {
         super.initCameraScan()
@@ -53,7 +47,7 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
             .setOnScanResultCallback {
                 val code = it.text
                 if (code.matches(isbnReg)) {
-                    Bus.with<String>(this::class todo "getResult").post(code)
+                    messenger.requestBook.post(code)
                     cameraScan.setAnalyzeImage(false)
                     return@setOnScanResultCallback false
                 }

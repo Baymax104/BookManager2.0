@@ -9,9 +9,6 @@ import androidx.core.util.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.architecture.ActivityViewModelScope
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 /**
  *@Description
@@ -20,11 +17,7 @@ import javax.inject.Inject
  *@Date 2023/4/3 15:39
  *@Version 1
  */
-@AndroidEntryPoint
 abstract class BaseActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var viewModelScope: ActivityViewModelScope
 
     private var mBinding: ViewDataBinding? = null
 
@@ -35,27 +28,21 @@ abstract class BaseActivity : AppCompatActivity() {
     protected open fun initUIComponent(binding: ViewDataBinding) {
     }
 
-    protected open fun initViewModel() {
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Binding
-        initViewModel()
+        // initBinding
         val config = configureBinding()
         val (layout, vmId, stateVM) = config
-
         val binding: ViewDataBinding = DataBindingUtil.setContentView(this, layout)
         binding.lifecycleOwner = this
-
-        applyToolbar(binding.root)
 
         binding.setVariable(vmId, stateVM)
         config.params.forEach { key, value -> binding.setVariable(key, value) }
         mBinding = binding
 
         // initWindow
+        applyToolbar(binding.root)
         initUIComponent(binding)
     }
 
@@ -69,9 +56,7 @@ abstract class BaseActivity : AppCompatActivity() {
         return if (menuId != null) {
             menuInflater.inflate(menuId, menu)
             true
-        } else {
-            false
-        }
+        } else false
     }
 
     override fun onDestroy() {

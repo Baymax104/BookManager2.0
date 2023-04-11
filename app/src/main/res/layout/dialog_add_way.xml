@@ -3,13 +3,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.view.View.OnClickListener"/>
         <variable
-                name="scan"
-                type="OnClickListener" />
-        <variable
-                name="manual"
-                type="OnClickListener" />
+                name="handler"
+                type="com.baymax104.bookmanager20.view.process.AddWayDialog.Handler" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -44,7 +40,7 @@
                     android:paddingVertical="10dp"
                     style="@style/DialogButtonTextStyle"
                     android:background="?attr/selectableItemBackground"
-                    android:onClick="@{scan}"/>
+                    android:onClick="@{handler.scan}"/>
 
             <View
                     android:layout_width="match_parent"
@@ -59,7 +55,7 @@
                     android:paddingVertical="10dp"
                     style="@style/DialogButtonTextStyle"
                     android:background="?attr/selectableItemBackground"
-                    android:onClick="@{manual}"/>
+                    android:onClick="@{handler.manual}"/>
 
         </LinearLayout>
 

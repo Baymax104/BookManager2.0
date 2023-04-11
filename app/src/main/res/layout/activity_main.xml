@@ -9,7 +9,7 @@
                 type="com.baymax104.bookmanager20.adapter.FragmentAdapter" />
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.MainActivity.State" />
+                type="com.baymax104.bookmanager20.view.MainActivity.States" />
         <variable
                 name="handler"
                 type="com.baymax104.bookmanager20.view.MainActivity.Handler" />

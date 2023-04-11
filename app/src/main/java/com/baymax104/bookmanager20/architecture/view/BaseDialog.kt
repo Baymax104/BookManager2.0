@@ -1,9 +1,10 @@
 package com.baymax104.bookmanager20.architecture.view
 
-import androidx.core.util.forEach
+import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.baymax104.bookmanager20.architecture.ActivityViewModelScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.lxj.xpopup.core.BasePopupView
 
 /**
@@ -13,14 +14,17 @@ import com.lxj.xpopup.core.BasePopupView
  *@Date 2023/4/3 18:42
  *@Version 1
  */
-val BasePopupView.viewModelScope: ActivityViewModelScope
-    get() = ActivityViewModelScope()
-
-inline fun <reified T> BasePopupView.bind(config: DataBindingConfig): T? {
-    val binding: ViewDataBinding = DataBindingUtil.bind(popupImplView) ?: return null
+fun BasePopupView.bind(vararg params: Pair<Int, Any>) {
+    // binding
+    val binding: ViewDataBinding = DataBindingUtil.bind(popupImplView) ?: return
     binding.lifecycleOwner = this
-    val (_, vmId, stateVM) = config
-    binding.setVariable(vmId, stateVM)
-    config.params.forEach { key, value -> binding.setVariable(key, value) }
-    return binding as T
+    params.forEach { binding.setVariable(it.first, it.second) }
+
+    // register unbind
+    lifecycle.addObserver(LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_DESTROY) {
+            Log.i("BM-", "对话框结束")
+            binding.unbind()
+        }
+    })
 }
