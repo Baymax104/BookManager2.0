@@ -40,4 +40,8 @@ object MainRepository {
     suspend fun queryAllFinishBook() = withContext(Dispatchers.IO) {
         bookDao.queryAllFinish()
     }
+
+    suspend fun deleteBooks(bookIds: List<Int>) = withContext(Dispatchers.IO) {
+        bookDao.deleteBooks(bookIds)
+    }
 }

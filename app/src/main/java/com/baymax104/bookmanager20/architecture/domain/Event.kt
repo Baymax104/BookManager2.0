@@ -20,7 +20,7 @@ open class EventState<S, R> {
     private val sender = MData<Event.SendEvent<S>>()
     private val replier = MData<Event.ReplyEvent<R>>()
 
-    fun post(value: S) {
+    fun send(value: S) {
         sender.value = Event.SendEvent(value)
     }
 
@@ -44,14 +44,14 @@ class Sender<S> : EventState<S, Null>() {
 }
 
 class Replier<R> : EventState<Null, R>() {
-    fun post() {
-        super.post(null)
+    fun send() {
+        super.send(null)
     }
 }
 
 class Notifier : EventState<Null, Null>() {
-    fun post() {
-        super.post(null)
+    fun send() {
+        super.send(null)
     }
 
     fun reply() {

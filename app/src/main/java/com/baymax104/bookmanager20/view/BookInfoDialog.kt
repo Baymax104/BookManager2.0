@@ -48,7 +48,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
     }
 
     inner class Handler {
-        val modify = OnClickListener { messenger.modifyBook.post(states.book.value) }
+        val modify = OnClickListener { messenger.modifyBook.send(states.book.value) }
 
         val confirm = OnClickListener {
             if (states.book.value.page <= 0) {
@@ -62,7 +62,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
                         val file = ImageUtil.download(activity, it)
                         file?.absolutePath ?: it
                     }
-                    messenger.insertBook.post(book)
+                    messenger.insertBook.send(book)
                 }
             }
         }

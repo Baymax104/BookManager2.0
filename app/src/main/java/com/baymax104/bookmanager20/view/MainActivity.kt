@@ -9,11 +9,9 @@ import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.architecture.domain.State
 import com.baymax104.bookmanager20.architecture.domain.StateHolder
 import com.baymax104.bookmanager20.architecture.domain.activityViewModels
-import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.BaseActivity
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityMainBinding
-import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.util.MainScope
 import com.baymax104.bookmanager20.util.MainScopeContext
 import com.baymax104.bookmanager20.util.start
@@ -28,12 +26,11 @@ class MainActivity : BaseActivity() {
 
     private val states: States by activityViewModels()
 
-    private val editMessenger: EditMessenger by applicationViewModels()
-
     class States : StateHolder() {
         val page = State(0)
         val fragments = listOf(ProcessFragment(), FinishFragment())
         val drawerOpen = State(false)
+        val enterEdit = State(false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +75,7 @@ class MainActivity : BaseActivity() {
         when (item.itemId) {
             android.R.id.home -> states.drawerOpen.value = true
             R.id.edit -> {
-                editMessenger.isEdit.post(states.page.value)
+                states.enterEdit.value = true
                 this@MainActivity start EditActivity::class
             }
         }

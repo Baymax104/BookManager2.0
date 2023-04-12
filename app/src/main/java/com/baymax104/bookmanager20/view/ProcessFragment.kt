@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import android.view.View
 import android.view.View.OnClickListener
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
@@ -11,6 +12,7 @@ import com.baymax104.bookmanager20.architecture.*
 import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
+import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.domain.ProcessRequester
@@ -20,6 +22,7 @@ import com.baymax104.bookmanager20.view.adapter.ProcessAdapter
 import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import kotlinx.coroutines.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
@@ -41,6 +44,8 @@ class ProcessFragment : BaseFragment() {
     private val messenger: ProcessMessenger by applicationViewModels()
 
     private val editMessenger: EditMessenger by applicationViewModels()
+
+    private val mainState: MainActivity.States by activityViewModels()
 
     private val cameraLauncher = registerLauncher {
         ImageUtil.compress(activity, states.uriPath) { file ->
@@ -79,9 +84,15 @@ class ProcessFragment : BaseFragment() {
             }
         }
 
-        editMessenger.isEdit.observeSend(viewLifecycleOwner) {
-            if (it == 0) {
-                editMessenger.books.post(states.books.value)
+        mainState.enterEdit.observe(viewLifecycleOwner) {
+            if (mainState.page.value == 0) {
+                editMessenger.books.send(states.books.value)
+            }
+        }
+
+        editMessenger.books.observeReply(viewLifecycleOwner) {
+            if (mainState.page.value == 0) {
+                states.books.value = it
             }
         }
 
@@ -117,6 +128,11 @@ class ProcessFragment : BaseFragment() {
         val uri = UriUtils.file2Uri(file)
         val intent = IntentUtils.getCaptureIntent(uri)
         cameraLauncher.launch(intent)
+    }
+
+    override fun initUIComponent(binding: ViewDataBinding) {
+        binding as FragmentProgressBinding
+        binding.bookList.itemAnimator = SlideInRightAnimator()
     }
 }
 

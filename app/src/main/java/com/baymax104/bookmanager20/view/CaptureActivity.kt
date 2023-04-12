@@ -46,7 +46,7 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
             .setOnScanResultCallback {
                 val code = it.text
                 if (code.matches(isbnReg)) {
-                    messenger.requestBook.post(code)
+                    messenger.requestBook.send(code)
                     cameraScan.setAnalyzeImage(false)
                     return@setOnScanResultCallback false
                 }

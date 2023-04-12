@@ -11,6 +11,7 @@ import com.baymax104.bookmanager20.architecture.view.BaseActivity
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityEditBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
+import com.baymax104.bookmanager20.domain.EditRequester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.util.lightClone
 import com.baymax104.bookmanager20.util.showSnackBar
@@ -31,6 +32,8 @@ class EditActivity : BaseActivity() {
     private val states: States by activityViewModels()
 
     private val messenger: EditMessenger by applicationViewModels()
+
+    private val requester: EditRequester by activityViewModels()
 
     class States : StateHolder() {
         val books = State(listOf<Book>())
@@ -94,5 +97,8 @@ class EditActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        requester.deleteBooks(states.stack.value) {
+            messenger.books.reply(states.books.value)
+        }
     }
 }

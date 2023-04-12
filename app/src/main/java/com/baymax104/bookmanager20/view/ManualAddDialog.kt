@@ -44,14 +44,14 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
     inner class Handler {
 
-        val takePhoto = OnClickListener { messenger.photoUri.post() }
+        val takePhoto = OnClickListener { messenger.photoUri.send() }
 
         val confirm = OnClickListener {
             val book = states.book.value
             if (book.page <= 0) {
                 ToastUtils.showShort("页数必须大于0")
             } else {
-                dismissWith { messenger.insertBook.post(book) }
+                dismissWith { messenger.insertBook.send(book) }
             }
         }
 

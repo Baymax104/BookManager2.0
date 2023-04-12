@@ -23,4 +23,7 @@ interface BookDao {
 
     @Query("select * from Book where progress >= page order by tableRank asc")
     suspend fun queryAllFinish(): MutableList<Book>
+
+    @Query("delete from Book where id in (:bookIds)")
+    suspend fun deleteBooks(bookIds: List<Int>): Int
 }

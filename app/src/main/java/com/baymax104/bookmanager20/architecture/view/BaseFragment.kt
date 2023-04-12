@@ -26,6 +26,9 @@ abstract class BaseFragment : Fragment() {
 
     protected abstract fun configureBinding(): DataBindingConfig
 
+    protected open fun initUIComponent(binding: ViewDataBinding) {
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activity = context as AppCompatActivity
@@ -36,15 +39,22 @@ abstract class BaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // initialize
         val config = configureBinding()
         val (layout, vmId, state) = config
         val binding: ViewDataBinding = DataBindingUtil.inflate(inflater, layout, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
+
+        // binding
         binding.setVariable(vmId, state)
         config.params.forEach { variableId, value ->
             binding.setVariable(variableId, value)
         }
         mBinding = binding
+
+        // initUI
+        initUIComponent(binding)
+
         return binding.root
     }
 
