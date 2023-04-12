@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:empty_layout="@layout/layout_empty"
-                state_hasContent="@{state.hasContent}"
+                state_hasContent="@{state.books}"
                 android:id="@+id/state">
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"

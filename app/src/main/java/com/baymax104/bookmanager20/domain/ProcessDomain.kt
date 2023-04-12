@@ -1,11 +1,10 @@
 package com.baymax104.bookmanager20.domain
 
 import com.baymax104.bookmanager20.architecture.domain.*
-import com.baymax104.bookmanager20.dataSource.FAIL
-import com.baymax104.bookmanager20.dataSource.ResultState
-import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
+import com.baymax104.bookmanager20.util.Callback
+import com.baymax104.bookmanager20.util.mainLaunch
 
 /**
  *@Description
@@ -22,42 +21,54 @@ class ProcessMessenger : Messenger() {
     val requestBook = EventState<String, Book>()
 
     // 修改对话框修改后返回Book
-    val modifyBook = Sender<Book>()
+    val modifyBook = EventState<Book, Book>()
+
+    // 对话框请求插入Book
+    val insertBook = Sender<Book>()
 }
 
 class ProcessRequester : Requester() {
 
     val repo = MainRepository
 
-    suspend fun requestBookInfo(isbn: String): ResultState<Book> {
-        return try {
-            val (code, message, data) = repo.requestBookInfo(isbn)
-            when (code) {
-                0 -> Success(data)
-                else -> FAIL(message, null)
+    inline fun requestBookInfo(isbn: String, crossinline callback: Callback<Book>) =
+        mainLaunch {
+            try {
+                val (code, message, data) = repo.requestBookInfo(isbn)
+                when (code) {
+                    0 -> Success(data)
+                    else -> Fail(Exception(message))
+                }
+            } catch (e: Exception) {
+                Fail(e)
+            }.let {
+                ResultCallback<Book>().apply(callback)(it)
             }
-        } catch (e: Exception) {
-            FAIL(e.message, e)
         }
-    }
 
-    suspend fun insertProcessBook(book: Book): ResultState<Nothing?> {
-        return try {
-            val i = repo.insertProcessBook(book)
-            book.id = i.toInt()
-            Success(null)
-        } catch (e: Exception) {
-            FAIL(e.message, e)
+    inline fun insertProcessBook(book: Book, crossinline callback: Callback<Book>) =
+        mainLaunch {
+            try {
+                val i = repo.insertProcessBook(book)
+                book.id = i.toInt()
+                Success(book)
+            } catch (e: Exception) {
+                Fail(e)
+            }.let {
+                ResultCallback<Book>().apply(callback)(it)
+            }
         }
-    }
 
-    suspend fun queryAllBook(): ResultState<List<Book>> {
-        return try {
-            val books = repo.queryAllProcessBook()
-            Success(books)
-        } catch (e: Exception) {
-            FAIL(e.message, e)
+    inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
+        mainLaunch {
+            try {
+                val books = repo.queryAllProcessBook()
+                Success(books)
+            } catch (e: Exception) {
+                Fail(e)
+            }.let {
+                ResultCallback<List<Book>>().apply(callback)(it)
+            }
         }
-    }
 
 }

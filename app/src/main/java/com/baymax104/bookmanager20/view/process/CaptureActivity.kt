@@ -1,6 +1,7 @@
 package com.baymax104.bookmanager20.view.process
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.baymax104.bookmanager20.R
@@ -65,6 +66,11 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
         setFullscreen(true)
         setSupportActionBar(toolBar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

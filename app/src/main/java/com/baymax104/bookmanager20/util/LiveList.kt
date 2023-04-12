@@ -1,9 +1,6 @@
 package com.baymax104.bookmanager20.util
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import kotlin.properties.Delegates
 
 /**
@@ -13,9 +10,6 @@ import kotlin.properties.Delegates
  *@Date 2023/3/25 14:12
  *@Version 1
  */
-typealias MData<T> = MutableLiveData<T>
-typealias LData<T> = LiveData<T>
-typealias MLD<T> = MediatorLiveData<T>
 
 typealias ObserverList<T> = MutableList<ListObserver<T>>
 

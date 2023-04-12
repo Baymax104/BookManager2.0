@@ -1,6 +1,5 @@
 package com.baymax104.bookmanager20.architecture.view
 
-import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
@@ -23,7 +22,6 @@ fun BasePopupView.bind(vararg params: Pair<Int, Any>) {
     // register unbind
     lifecycle.addObserver(LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_DESTROY) {
-            Log.i("BM-", "对话框结束")
             binding.unbind()
         }
     })

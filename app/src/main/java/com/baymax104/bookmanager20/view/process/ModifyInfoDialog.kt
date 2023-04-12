@@ -6,10 +6,12 @@ import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.architecture.domain.State
 import com.baymax104.bookmanager20.architecture.domain.StateHolder
+import com.baymax104.bookmanager20.architecture.domain.activityViewModels
 import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.bind
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.entity.Book
+import com.blankj.utilcode.util.CloneUtils
 import com.lxj.xpopup.core.BottomPopupView
 
 /**
@@ -23,7 +25,9 @@ class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
 
     private val messenger: ProcessMessenger by applicationViewModels()
 
-    object States : StateHolder() {
+    private val states: States by activityViewModels()
+
+    class States : StateHolder() {
         val book = State(Book())
     }
 
@@ -31,16 +35,17 @@ class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
 
     override fun onCreate() {
         super.onCreate()
-        bind(BR.state to States, BR.handler to Handler())
+        bind(BR.state to states, BR.handler to Handler())
 
-        messenger.requestBook.observeReply(this) {
-            States.book.value = it
+        messenger.modifyBook.observeSend(this) {
+            states.book.value = CloneUtils.deepClone(it, it.javaClass)
         }
     }
 
     inner class Handler {
         val confirm = OnClickListener {
-            messenger.modifyBook.post(States.book.value)
+            messenger.modifyBook.reply(states.book.value)
+            dismiss()
         }
 
         val cancel = OnClickListener { dismiss() }

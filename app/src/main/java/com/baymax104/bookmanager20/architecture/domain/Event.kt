@@ -2,6 +2,7 @@ package com.baymax104.bookmanager20.architecture.domain
 
 import androidx.lifecycle.LifecycleOwner
 import com.baymax104.bookmanager20.util.MData
+import com.baymax104.bookmanager20.util.Null
 
 /**
  *@Description
@@ -36,13 +37,13 @@ open class EventState<S, R> {
     }
 }
 
-class Sender<S> : EventState<S, Nothing?>() {
+class Sender<S> : EventState<S, Null>() {
     fun reply() {
         super.reply(null)
     }
 }
 
-class Replier<R> : EventState<Nothing?, R>() {
+class Replier<R> : EventState<Null, R>() {
     fun post() {
         super.post(null)
     }

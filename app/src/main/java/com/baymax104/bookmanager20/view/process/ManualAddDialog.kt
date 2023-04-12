@@ -9,12 +9,8 @@ import com.baymax104.bookmanager20.architecture.domain.StateHolder
 import com.baymax104.bookmanager20.architecture.domain.activityViewModels
 import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.bind
-import com.baymax104.bookmanager20.dataSource.FAIL
-import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.domain.ProcessMessenger
-import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.util.mainLaunch
 import com.blankj.utilcode.util.ToastUtils
 import com.lxj.xpopup.core.BottomPopupView
 
@@ -29,9 +25,9 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
     private val messenger: ProcessMessenger by applicationViewModels()
 
-    private val requester: ProcessRequester by activityViewModels()
+    private val states: States by activityViewModels()
 
-    object States : StateHolder() {
+    class States : StateHolder() {
         val book = State(Book())
     }
 
@@ -39,10 +35,10 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
     override fun onCreate() {
         super.onCreate()
-        bind(BR.state to States, BR.handler to Handler())
+        bind(BR.state to states, BR.handler to Handler())
 
         messenger.photoUri.observeReply(this) {
-            States.book.value.photo = it
+            states.book.value.photo = it
         }
     }
 
@@ -51,22 +47,14 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
         val takePhoto = OnClickListener { messenger.photoUri.post() }
 
         val confirm = OnClickListener {
-            val book = States.book.value
+            val book = states.book.value
             if (book.page <= 0) {
                 ToastUtils.showShort("页数必须大于0")
             } else {
-                dismissWith { insertBook(book) }
+                dismissWith { messenger.insertBook.post(book) }
             }
         }
 
         val cancel = OnClickListener { dismiss() }
-    }
-
-
-    private fun insertBook(book: Book) = mainLaunch {
-        when (val state = requester.insertProcessBook(book)) {
-            is Success -> ToastUtils.showShort("添加成功")
-            is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
-        }
     }
 }

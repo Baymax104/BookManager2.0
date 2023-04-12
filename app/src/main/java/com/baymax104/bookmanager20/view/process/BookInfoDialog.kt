@@ -9,10 +9,7 @@ import com.baymax104.bookmanager20.architecture.domain.StateHolder
 import com.baymax104.bookmanager20.architecture.domain.activityViewModels
 import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.bind
-import com.baymax104.bookmanager20.dataSource.FAIL
-import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.domain.ProcessMessenger
-import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.util.ImageUtil
 import com.baymax104.bookmanager20.util.mainLaunch
@@ -31,9 +28,9 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
 
     private val messenger: ProcessMessenger by applicationViewModels()
 
-    private val requester: ProcessRequester by activityViewModels()
+    private val states: States by activityViewModels()
 
-    object States : StateHolder() {
+    class States : StateHolder() {
         val book = State(Book())
     }
 
@@ -41,35 +38,31 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
 
     override fun onCreate() {
         super.onCreate()
-        bind(BR.state to States, BR.handler to Handler())
+        bind(BR.state to states, BR.handler to Handler())
 
-        messenger.apply {
+        messenger.requestBook.observeReply(this) { states.book.value = it }
 
-            requestBook.observeReply(this@BookInfoDialog) { States.book.value = it }
+        messenger.modifyBook.observeSend(this) { activity showOnce ModifyInfoDialog(activity) }
 
-            modifyBook.observeSend(this@BookInfoDialog) { States.book.value = it }
-        }
+        messenger.modifyBook.observeReply(this) { states.book.value = it }
     }
 
     inner class Handler {
-        val modify = OnClickListener { activity showOnce ModifyInfoDialog(activity) }
+        val modify = OnClickListener { messenger.modifyBook.post(states.book.value) }
 
         val confirm = OnClickListener {
+            if (states.book.value.page <= 0) {
+                ToastUtils.showShort("页数必须大于0")
+                return@OnClickListener
+            }
             dismissWith {
-                val book = States.book.value
-                if (book.page == 0) {
-                    ToastUtils.showShort("页数必须大于0")
-                    return@dismissWith
-                }
                 mainLaunch {
+                    val book = states.book.value
                     book.photo = book.photo?.let {
                         val file = ImageUtil.download(activity, it)
                         file?.absolutePath ?: it
                     }
-                    when (val state = requester.insertProcessBook(book)) {
-                        is Success -> ToastUtils.showShort("添加成功")
-                        is FAIL -> ToastUtils.showShort("添加失败：${state.error}")
-                    }
+                    messenger.insertBook.post(book)
                 }
             }
         }

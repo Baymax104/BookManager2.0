@@ -19,13 +19,15 @@ object CommonBindingAdapter {
     @JvmStatic
     @BindingAdapter("recycler_data")
     fun <E> RecyclerView.recyclerData(data: List<E>) {
-        (adapter!! as ListAdapter<E, BaseAdapter.BaseViewHolder>).submitList(data)
+        // submitList在新旧list是同一个对象时会直接返回
+        val copyList = ArrayList(data)
+        (adapter!! as ListAdapter<E, BaseAdapter.BaseViewHolder>).submitList(copyList)
     }
 
     @JvmStatic
     @BindingAdapter("state_hasContent")
-    fun StateLayout.stateChange(hasContent: Boolean) {
-        if (hasContent) {
+    fun <E> StateLayout.stateChange(data: List<E>) {
+        if (data.isNotEmpty()) {
             showContent()
         } else {
             showEmpty()

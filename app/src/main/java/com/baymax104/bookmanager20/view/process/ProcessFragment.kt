@@ -9,14 +9,9 @@ import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.adapter.ProcessAdapter
 import com.baymax104.bookmanager20.architecture.*
-import com.baymax104.bookmanager20.architecture.domain.State
-import com.baymax104.bookmanager20.architecture.domain.StateHolder
-import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
-import com.baymax104.bookmanager20.architecture.domain.fragmentViewModels
+import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
-import com.baymax104.bookmanager20.dataSource.FAIL
-import com.baymax104.bookmanager20.dataSource.Success
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
@@ -27,7 +22,6 @@ import com.blankj.utilcode.util.UriUtils
 import kotlinx.coroutines.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
-
 /**
  *@Description
  *@Author John
@@ -52,50 +46,49 @@ class ProcessFragment : BaseFragment() {
 
     class States : StateHolder() {
         val books = State(listOf<Book>())
-        val hasContent = State(false)
         lateinit var uriPath: String
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        messenger.apply {
+        messenger.photoUri.observeSend(viewLifecycleOwner) { takePhoto() }
 
-            requestBook.observeReply(viewLifecycleOwner) {
-                this@ProcessFragment showOnce BookInfoDialog(activity)
+        messenger.requestBook.observeReply(viewLifecycleOwner) {
+            this@ProcessFragment showOnce BookInfoDialog(activity)
+        }
+
+        messenger.requestBook.observeSend(viewLifecycleOwner) { code ->
+            requester.requestBookInfo(code) {
+                success { reply(it) }
+                fail { ToastUtils.showShort(it.message) }
             }
+        }
 
-            photoUri.observeSend(viewLifecycleOwner) { takePhoto() }
-
-            requestBook.observeSend(viewLifecycleOwner) {
-                mainLaunch(BaseExceptionHandler) {
-                    when (val result = requester.requestBookInfo(it)) {
-                        is Success -> reply(result.data)
-                        is FAIL -> ToastUtils.showShort(result.message)
-                    }
+        messenger.insertBook.observeSend(viewLifecycleOwner) { book ->
+            requester.insertProcessBook(book) {
+                success {
+                    states.books.add(it)
+                    ToastUtils.showShort("添加成功")
                 }
+                fail { ToastUtils.showShort("添加失败：${it.message}") }
             }
         }
 
-        states.books.observe(viewLifecycleOwner) {
-            states.hasContent.value = it.isNotEmpty()
+        requester.queryAllBook {
+            success { states.books.value = it }
+            fail { ToastUtils.showShort(it.message) }
         }
-
-        mainLaunch {
-            when (val result = requester.queryAllBook()) {
-                is Success -> states.books.value = result.data
-                is FAIL -> ToastUtils.showShort(result.message)
-            }
-        }
-
     }
 
-    override fun configureBinding() =
-        DataBindingConfig(R.layout.fragment_progress, BR.state, states)
+    override fun configureBinding(): DataBindingConfig {
+        val adapter = ProcessAdapter()
+        return DataBindingConfig(R.layout.fragment_progress, BR.state, states)
             .add(
-                BR.adapter to ProcessAdapter(),
+                BR.adapter to adapter,
                 BR.handler to Handler()
             )
+    }
 
     inner class Handler {
         val add = OnClickListener {
@@ -116,3 +109,4 @@ class ProcessFragment : BaseFragment() {
         cameraLauncher.launch(intent)
     }
 }
+
