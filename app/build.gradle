@@ -112,4 +112,6 @@ dependencies {
     implementation 'top.zibin:Luban:1.1.8'
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.10"
+
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 }

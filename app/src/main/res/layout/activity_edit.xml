@@ -4,7 +4,12 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.EditActivity.States" />
+        <variable
+                name="adapter"
+                type="com.baymax104.bookmanager20.view.adapter.EditAdapter" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -21,7 +26,7 @@
                     android:layout_height="?actionBarSize"
                     android:id="@+id/toolbar"
                     android:background="@color/bar_color"
-                    app:layout_scrollFlags="scroll|snap|enterAlways">
+                    app:layout_scrollFlags="scroll|enterAlways">
 
                 <TextView
                         android:layout_width="wrap_content"
@@ -35,15 +40,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:empty_layout="@layout/layout_empty"
-                android:id="@+id/state">
+                android:id="@+id/state"
+                state_hasContent="@{state.books}"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/book_list"
                     tools:listitem="@layout/item_progress_book"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:orientation="vertical"/>
+                    android:orientation="vertical"
+                    android:adapter="@{adapter}"
+                    recycler_data="@{state.books}"/>
         </com.drake.statelayout.StateLayout>
 
 

@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.view.process
+package com.baymax104.bookmanager20.view
 
 import android.content.Context
 import android.view.View.OnClickListener

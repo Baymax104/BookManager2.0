@@ -9,10 +9,10 @@
         <import type="android.text.InputType"/>
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.States" />
+                type="com.baymax104.bookmanager20.view.ManualAddDialog.States" />
         <variable
                 name="handler"
-                type="com.baymax104.bookmanager20.view.process.ManualAddDialog.Handler" />
+                type="com.baymax104.bookmanager20.view.ManualAddDialog.Handler" />
     </data>
 
     <LinearLayout

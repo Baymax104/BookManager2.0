@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.util
+package com.baymax104.bookmanager20.practice
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  *@Date 2023/3/22 21:13
  *@Version 1
  */
-
+@Deprecated("Use EventState")
 object Bus {
     val core: LiveEventBusCore = LiveEventBusCore.get()
 

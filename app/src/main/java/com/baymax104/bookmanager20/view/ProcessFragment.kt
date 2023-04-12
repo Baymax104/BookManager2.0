@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.view.process
+package com.baymax104.bookmanager20.view
 
 import android.Manifest
 import android.os.Bundle
@@ -7,21 +7,23 @@ import android.view.View.OnClickListener
 import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.adapter.ProcessAdapter
 import com.baymax104.bookmanager20.architecture.*
 import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
+import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.util.*
+import com.baymax104.bookmanager20.view.adapter.ProcessAdapter
 import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
 import kotlinx.coroutines.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
+
 /**
  *@Description
  *@Author John
@@ -37,6 +39,8 @@ class ProcessFragment : BaseFragment() {
     private val states: States by fragmentViewModels()
 
     private val messenger: ProcessMessenger by applicationViewModels()
+
+    private val editMessenger: EditMessenger by applicationViewModels()
 
     private val cameraLauncher = registerLauncher {
         ImageUtil.compress(activity, states.uriPath) { file ->
@@ -72,6 +76,12 @@ class ProcessFragment : BaseFragment() {
                     ToastUtils.showShort("添加成功")
                 }
                 fail { ToastUtils.showShort("添加失败：${it.message}") }
+            }
+        }
+
+        editMessenger.isEdit.observeSend(viewLifecycleOwner) {
+            if (it == 0) {
+                editMessenger.books.post(states.books.value)
             }
         }
 

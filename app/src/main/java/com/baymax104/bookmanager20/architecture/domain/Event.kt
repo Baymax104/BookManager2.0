@@ -48,3 +48,13 @@ class Replier<R> : EventState<Null, R>() {
         super.post(null)
     }
 }
+
+class Notifier : EventState<Null, Null>() {
+    fun post() {
+        super.post(null)
+    }
+
+    fun reply() {
+        super.reply(null)
+    }
+}

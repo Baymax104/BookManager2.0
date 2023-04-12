@@ -1,14 +1,12 @@
-package com.baymax104.bookmanager20.view.process
+package com.baymax104.bookmanager20.view
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.drake.statusbar.immersive
-import com.drake.statusbar.setFullscreen
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.DecodeHintType
 import com.king.zxing.DecodeConfig
@@ -63,14 +61,9 @@ class CaptureActivity : com.king.zxing.CaptureActivity() {
         super.onCreate(savedInstanceState)
         val toolBar = findViewById<Toolbar>(R.id.toolbar)
         immersive(toolBar)
-        setFullscreen(true)
         setSupportActionBar(toolBar)
+        toolBar.setNavigationIcon(R.drawable.back)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar, menu)
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

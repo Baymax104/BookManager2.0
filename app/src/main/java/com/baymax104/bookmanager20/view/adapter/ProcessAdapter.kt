@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.adapter
+package com.baymax104.bookmanager20.view.adapter
 
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.databinding.ItemProgressBookBinding
@@ -17,11 +17,8 @@ class ProcessAdapter : BaseAdapter<Book, ItemProgressBookBinding>(
     { old, new -> old == new }
 ) {
 
-    var isEdit = false
-
     override fun onBind(binding: ItemProgressBookBinding, item: Book) {
         binding.book = item
-        binding.isEdit = isEdit
         binding.root.setOnClickListener { onItemClick(item) }
     }
 }

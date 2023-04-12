@@ -6,17 +6,18 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.adapter.FragmentAdapter
 import com.baymax104.bookmanager20.architecture.domain.State
 import com.baymax104.bookmanager20.architecture.domain.StateHolder
 import com.baymax104.bookmanager20.architecture.domain.activityViewModels
+import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.BaseActivity
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityMainBinding
+import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.util.MainScope
 import com.baymax104.bookmanager20.util.MainScopeContext
-import com.baymax104.bookmanager20.view.finish.FinishFragment
-import com.baymax104.bookmanager20.view.process.ProcessFragment
+import com.baymax104.bookmanager20.util.start
+import com.baymax104.bookmanager20.view.adapter.FragmentAdapter
 import com.blankj.utilcode.util.ToastUtils
 import com.drake.statusbar.immersive
 import com.google.android.material.navigation.NavigationBarView
@@ -26,6 +27,8 @@ import kotlinx.coroutines.cancel
 class MainActivity : BaseActivity() {
 
     private val states: States by activityViewModels()
+
+    private val editMessenger: EditMessenger by applicationViewModels()
 
     class States : StateHolder() {
         val page = State(0)
@@ -74,7 +77,10 @@ class MainActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> states.drawerOpen.value = true
-//            R.id.edit -> this@MainActivity start EditActivity::class
+            R.id.edit -> {
+                editMessenger.isEdit.post(states.page.value)
+                this@MainActivity start EditActivity::class
+            }
         }
         return true
     }

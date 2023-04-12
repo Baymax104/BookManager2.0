@@ -7,10 +7,10 @@
     <data>
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.process.BookInfoDialog.States" />
+                type="com.baymax104.bookmanager20.view.BookInfoDialog.States" />
         <variable
                 name="handler"
-                type="com.baymax104.bookmanager20.view.process.BookInfoDialog.Handler" />
+                type="com.baymax104.bookmanager20.view.BookInfoDialog.Handler" />
         <import type="android.widget.ImageView.ScaleType"/>
     </data>
 

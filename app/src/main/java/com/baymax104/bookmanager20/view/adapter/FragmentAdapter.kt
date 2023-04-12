@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.adapter
+package com.baymax104.bookmanager20.view.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

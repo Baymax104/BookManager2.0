@@ -1,6 +1,8 @@
-package com.baymax104.bookmanager20.util
+package com.baymax104.bookmanager20.practice
 
 import androidx.lifecycle.LifecycleOwner
+import com.baymax104.bookmanager20.util.LData
+import com.baymax104.bookmanager20.util.MLD
 import kotlin.properties.Delegates
 
 /**
@@ -17,7 +19,7 @@ typealias ObserverList<T> = MutableList<ListObserver<T>>
  * 使用观察者模式实现的单线程简易可观察列表
  * 支持数据源与观察者异步设置，数据整体只能由设置的可观察数据源来改变
  */
-@Suppress("unused")
+@Deprecated("Use ListAdapter")
 class LiveList<E>(observableSource: LData<MutableList<E>>) {
 
     private var source: MutableList<E> = mutableListOf()

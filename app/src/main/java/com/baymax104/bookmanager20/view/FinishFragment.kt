@@ -1,18 +1,16 @@
-package com.baymax104.bookmanager20.view.finish
+package com.baymax104.bookmanager20.view
 
 import android.os.Bundle
 import android.view.View
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.adapter.FinishAdapter
-import com.baymax104.bookmanager20.architecture.domain.State
-import com.baymax104.bookmanager20.architecture.domain.StateHolder
-import com.baymax104.bookmanager20.architecture.domain.activityViewModels
-import com.baymax104.bookmanager20.architecture.domain.fragmentViewModels
+import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
+import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.FinishRequester
 import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.view.adapter.FinishAdapter
 import com.blankj.utilcode.util.ToastUtils
 
 /**
@@ -28,6 +26,8 @@ class FinishFragment : BaseFragment() {
 
     private val requester: FinishRequester by activityViewModels()
 
+    private val editMessenger: EditMessenger by applicationViewModels()
+
     class States : StateHolder() {
         val books = State(listOf<Book>())
     }
@@ -37,6 +37,12 @@ class FinishFragment : BaseFragment() {
         requester.queryAllBook {
             success { states.books.value = it }
             fail { ToastUtils.showShort(it.message) }
+        }
+
+        editMessenger.isEdit.observeSend(viewLifecycleOwner) {
+            if (it == 1) {
+                editMessenger.books.post(states.books.value)
+            }
         }
     }
 

@@ -24,6 +24,13 @@ fun <E> State<out List<E>>.add(element: E) {
     value = list
 }
 
+fun <E> State<out List<E>>.add(i: Int, element: E) {
+    val list = value
+    list as MutableList<E>
+    list.add(i, element)
+    value = list
+}
+
 fun <E> State<out List<E>>.remove(element: E) {
     val list = value
     list as MutableList<E>

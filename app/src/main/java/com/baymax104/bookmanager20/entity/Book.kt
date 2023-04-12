@@ -5,6 +5,7 @@ import androidx.databinding.Bindable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
+import com.baymax104.bookmanager20.util.LightClone
 import com.baymax104.bookmanager20.util.PageDeserializer
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -22,7 +23,7 @@ import java.util.*
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Book(builder: Builder) : BaseObservable() {
+class Book(builder: Builder) : BaseObservable(), LightClone<Book> {
 
     @JsonIgnore
     @PrimaryKey(autoGenerate = true)
@@ -166,5 +167,22 @@ class Book(builder: Builder) : BaseObservable() {
         result = 31 * result + (isbn?.hashCode() ?: 0)
         result = 31 * result + tableRank
         return result
+    }
+
+    override fun clone(): Book {
+        return build {
+            id = this@Book.id
+            name = this@Book.name
+            page = this@Book.page
+            author = this@Book.author
+            progress = this@Book.progress
+            startTime = this@Book.startTime
+            endTime = this@Book.endTime
+            photo = this@Book.photo
+            publisher = this@Book.publisher
+            isbn = this@Book.isbn
+            description = this@Book.description
+            tableRank = this@Book.tableRank
+        }
     }
 }

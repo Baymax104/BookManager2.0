@@ -6,10 +6,10 @@
     <data>
         <variable
                 name="adapter"
-                type="com.baymax104.bookmanager20.adapter.FinishAdapter" />
+                type="com.baymax104.bookmanager20.view.adapter.FinishAdapter" />
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.finish.FinishFragment.States" />
+                type="com.baymax104.bookmanager20.view.FinishFragment.States" />
     </data>
 
     <com.drake.statelayout.StateLayout

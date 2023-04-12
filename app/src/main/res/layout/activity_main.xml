@@ -6,7 +6,7 @@
     <data>
         <variable
                 name="adapter"
-                type="com.baymax104.bookmanager20.adapter.FragmentAdapter" />
+                type="com.baymax104.bookmanager20.view.adapter.FragmentAdapter" />
         <variable
                 name="state"
                 type="com.baymax104.bookmanager20.view.MainActivity.States" />

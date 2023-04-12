@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.view.process
+package com.baymax104.bookmanager20.view
 
 import android.content.Context
 import android.view.View.OnClickListener
@@ -11,17 +11,17 @@ import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
 import com.baymax104.bookmanager20.architecture.view.bind
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.entity.Book
-import com.blankj.utilcode.util.CloneUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.lxj.xpopup.core.BottomPopupView
 
 /**
  *@Description
  *@Author John
  *@email
- *@Date 2023/3/24 14:57
+ *@Date 2023/3/20 19:25
  *@Version 1
  */
-class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
+class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
     private val messenger: ProcessMessenger by applicationViewModels()
 
@@ -31,21 +31,28 @@ class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
         val book = State(Book())
     }
 
-    override fun getImplLayoutId(): Int = R.layout.dialog_modify_info
+    override fun getImplLayoutId(): Int = R.layout.dialog_manual_add
 
     override fun onCreate() {
         super.onCreate()
         bind(BR.state to states, BR.handler to Handler())
 
-        messenger.modifyBook.observeSend(this) {
-            states.book.value = CloneUtils.deepClone(it, it.javaClass)
+        messenger.photoUri.observeReply(this) {
+            states.book.value.photo = it
         }
     }
 
     inner class Handler {
+
+        val takePhoto = OnClickListener { messenger.photoUri.post() }
+
         val confirm = OnClickListener {
-            messenger.modifyBook.reply(states.book.value)
-            dismiss()
+            val book = states.book.value
+            if (book.page <= 0) {
+                ToastUtils.showShort("页数必须大于0")
+            } else {
+                dismissWith { messenger.insertBook.post(book) }
+            }
         }
 
         val cancel = OnClickListener { dismiss() }

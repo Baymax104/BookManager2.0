@@ -12,14 +12,6 @@
             android:layout_height="match_parent"
             tools:ignore="ContentDescription">
 
-        <androidx.appcompat.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:id="@+id/toolbar"
-                android:layout_gravity="top"
-                android:background="@color/transparent"
-                android:fitsSystemWindows="true" />
-
         <androidx.camera.view.PreviewView
                 android:id="@+id/previewView"
                 android:layout_width="match_parent"
@@ -41,6 +33,14 @@
                 android:layout_gravity="center"
                 android:src="@drawable/zxl_flashlight_selector"
                 android:layout_marginTop="170dp" />
+
+        <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/toolbar"
+                android:layout_gravity="top"
+                android:background="@color/transparent"
+                android:fitsSystemWindows="true" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

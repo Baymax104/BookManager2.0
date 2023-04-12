@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.adapter
+package com.baymax104.bookmanager20.view.adapter
 
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.databinding.ItemFinishBookBinding
@@ -17,10 +17,7 @@ class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(
     { old, new -> old == new }
 ) {
 
-    var isEdit = false
-
     override fun onBind(binding: ItemFinishBookBinding, item: Book) {
         binding.book = item
-        binding.isEdit = isEdit
     }
 }

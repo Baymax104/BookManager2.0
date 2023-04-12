@@ -3,7 +3,7 @@ package com.baymax104.bookmanager20.view.binding
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.baymax104.bookmanager20.adapter.BaseAdapter
+import com.baymax104.bookmanager20.view.adapter.BaseAdapter
 import com.drake.statelayout.StateLayout
 
 /**

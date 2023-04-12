@@ -6,13 +6,13 @@
     <data>
         <variable
                 name="adapter"
-                type="com.baymax104.bookmanager20.adapter.ProcessAdapter" />
+                type="com.baymax104.bookmanager20.view.adapter.ProcessAdapter" />
         <variable
                 name="handler"
-                type="com.baymax104.bookmanager20.view.process.ProcessFragment.Handler" />
+                type="com.baymax104.bookmanager20.view.ProcessFragment.Handler" />
         <variable
                 name="state"
-                type="com.baymax104.bookmanager20.view.process.ProcessFragment.States" />
+                type="com.baymax104.bookmanager20.view.ProcessFragment.States" />
     </data>
 
     <FrameLayout

@@ -7,10 +7,6 @@
         <variable
                 name="book"
                 type="com.baymax104.bookmanager20.entity.Book" />
-        <variable
-                name="isEdit"
-                type="Boolean" />
-        <import type="android.view.View"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -33,59 +29,42 @@
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:layout_gravity="start">
 
-                <LinearLayout
-                        android:layout_width="0dp"
+                <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_gravity="start"
-                        android:layout_weight="1">
+                        android:textSize="17sp"
+                        android:textColor="@color/black"
+                        android:layout_gravity="start|center_vertical"
+                        android:maxLines="1"
+                        android:text="@{book.name ?? `未添加书名`}"
+                        android:ellipsize="end" />
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="17sp"
-                            android:textColor="@color/black"
-                            android:layout_gravity="start|center_vertical"
+                            android:layout_alignParentStart="true"
+                            android:textColor="@color/gray"
+                            android:textSize="13sp"
                             android:maxLines="1"
-                            android:text="@{book.name ?? `未添加书名`}"
+                            android:maxEms="10"
+                            android:text="@{book.author ?? `佚名`}"
                             android:ellipsize="end" />
 
-                    <RelativeLayout
-                            android:layout_width="match_parent"
+                    <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:textColor="@color/gray"
-                                android:textSize="13sp"
-                                android:maxLines="1"
-                                android:maxEms="10"
-                                android:text="@{book.author ?? `佚名`}"
-                                android:ellipsize="end" />
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:textColor="@color/gray"
-                                book_date="@{book.startTime}" />
-                    </RelativeLayout>
-                </LinearLayout>
-
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/sort"
-                        android:layout_gravity="end|center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="5dp"
-                        android:visibility="@{isEdit ? View.VISIBLE : View.INVISIBLE}"
-                        android:src="@drawable/sort" />
+                            android:layout_alignParentEnd="true"
+                            android:textColor="@color/gray"
+                            book_date="@{book.startTime}" />
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout

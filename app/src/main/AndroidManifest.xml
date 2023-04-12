@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".view.process.CaptureActivity"
+                android:name=".view.CaptureActivity"
                 android:theme="@style/CaptureTheme" />
     </application>
 
