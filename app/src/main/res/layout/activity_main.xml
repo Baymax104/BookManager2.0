@@ -20,9 +20,10 @@
             android:layout_height="match_parent"
             tools:context=".view.MainActivity"
             android:id="@+id/drawer"
-            drawer_open="@={state.drawerOpen}"
             android:orientation="vertical"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            drawer_open="@{state.drawerOpen}"
+            drawer_stateChanged="@{state.drawerOpen}">
 
         <LinearLayout
                 android:layout_width="match_parent"

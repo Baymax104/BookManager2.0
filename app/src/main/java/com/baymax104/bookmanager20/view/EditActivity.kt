@@ -43,19 +43,19 @@ class EditActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        messenger.books.observeSend(this) {
+        messenger.books.observeSendSticky(this) {
             states.books.value = it.lightClone()
         }
 
         states.stack.observe(this) {
             states.apply {
-                // stackLength 为一轮添加中 stack 的最大长度，当点击撤销时一轮添加停止
-                // 撤销时最新的数据将被删除，确定存入的个数为 stack.size - 1 ，stackLength 记录删除前的 stack.size
-                // 当 stack.size >= stackLength 时，表示有新数据添加
+                // stackLength 为一轮添加中 stack 中确定存入的个数
+                // 撤销时最新的数据将被删除，确定存入的个数为 stackLength = stack.size - 1
+                // 当 stack.size > stackLength 时，表示有新数据添加
                 // 有数据添加时才显示 SnackBar ，防止撤销时对 stack 的操作触发观察者更新
-                if (stack.value.size != 0 && stack.value.size >= stackLength) {
+                if (stack.value.size != 0 && stack.value.size > stackLength) {
                     this@EditActivity showSnackBar {
-                        stackLength = stack.value.size
+                        stackLength = stack.value.size - 1
                         val last = stack.value.last()
                         stack.remove(last)
                         books.add(last.index, last.value)

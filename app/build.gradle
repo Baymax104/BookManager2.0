@@ -114,4 +114,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.10"
 
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
+
+    implementation 'com.kunminx.arch:unpeek-livedata:7.8.0'
 }

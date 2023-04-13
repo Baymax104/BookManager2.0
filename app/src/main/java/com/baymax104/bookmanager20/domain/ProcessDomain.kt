@@ -5,6 +5,7 @@ import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.Callback
 import com.baymax104.bookmanager20.util.mainLaunch
+import java.util.*
 
 /**
  *@Description
@@ -49,6 +50,7 @@ class ProcessRequester : Requester() {
     inline fun insertProcessBook(book: Book, crossinline callback: Callback<Book>) =
         mainLaunch {
             try {
+                book.startTime = Date()
                 val i = repo.insertProcessBook(book)
                 book.id = i.toInt()
                 Success(book)

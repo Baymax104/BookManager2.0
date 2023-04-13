@@ -36,7 +36,7 @@ class ModifyInfoDialog(context: Context) : BottomPopupView(context) {
         super.onCreate()
         bind(BR.state to states, BR.handler to Handler())
 
-        messenger.modifyBook.observeSend(this) {
+        messenger.modifyBook.observeSendSticky(this) {
             states.book.value = it.clone()
         }
     }

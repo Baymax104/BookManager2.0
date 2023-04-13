@@ -3,10 +3,9 @@ package com.baymax104.bookmanager20.view.binding
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseBindingAdapter
-import androidx.databinding.InverseBindingListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener
+import com.baymax104.bookmanager20.architecture.domain.State
 import java.util.*
 
 /**
@@ -29,23 +28,15 @@ object DrawerAdapter {
     }
 
     @JvmStatic
-    @InverseBindingAdapter(attribute = "drawer_open", event = "drawer_openAttrChanged")
-    fun DrawerLayout.isOpened(): Boolean {
-        return isOpen
-    }
-
-    @JvmStatic
-    @BindingAdapter("drawer_openAttrChanged")
-    fun DrawerLayout.onStateChanged(listener: InverseBindingListener) {
+    @BindingAdapter("drawer_stateChanged")
+    fun DrawerLayout.onStateChanged(state: State<Boolean>) {
         addDrawerListener(object : SimpleDrawerListener() {
-
-            // 展开完成时调用，不能使用onDrawerStateChanged代替
             override fun onDrawerOpened(drawerView: View) {
-                listener.onChange()
+                state.value = true
             }
 
             override fun onDrawerClosed(drawerView: View) {
-                listener.onChange()
+                state.value = false
             }
         })
     }

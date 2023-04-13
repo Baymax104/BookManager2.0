@@ -40,7 +40,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
         super.onCreate()
         bind(BR.state to states, BR.handler to Handler())
 
-        messenger.requestBook.observeReply(this) { states.book.value = it }
+        messenger.requestBook.observeReplySticky(this) { states.book.value = it }
 
         messenger.modifyBook.observeSend(this) { activity showOnce ModifyInfoDialog(activity) }
 

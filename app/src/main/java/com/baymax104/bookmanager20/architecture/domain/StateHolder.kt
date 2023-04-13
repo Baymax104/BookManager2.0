@@ -1,7 +1,7 @@
 package com.baymax104.bookmanager20.architecture.domain
 
 import androidx.lifecycle.ViewModel
-import com.baymax104.bookmanager20.util.MData
+import com.kunminx.architecture.ui.callback.UnPeekLiveData
 import java.util.*
 
 /**
@@ -13,7 +13,7 @@ import java.util.*
  */
 open class StateHolder : ViewModel()
 
-class State<E>(value: E) : MData<E>(value) {
+class State<E>(value: E) : UnPeekLiveData<E>(value) {
     override fun getValue(): E =
         super.getValue() ?: throw NullPointerException("state value is null")
 }

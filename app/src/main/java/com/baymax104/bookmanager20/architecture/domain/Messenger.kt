@@ -2,8 +2,8 @@ package com.baymax104.bookmanager20.architecture.domain
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import com.baymax104.bookmanager20.util.MData
 import com.baymax104.bookmanager20.util.Null
+import com.kunminx.architecture.ui.callback.UnPeekLiveData
 
 /**
  *@Description
@@ -21,8 +21,8 @@ sealed class Event {
 }
 
 open class EventState<S, R> {
-    private val sender = MData<Event.SendEvent<S>>()
-    private val replier = MData<Event.ReplyEvent<R>>()
+    private val sender = UnPeekLiveData<Event.SendEvent<S>>()
+    private val replier = UnPeekLiveData<Event.ReplyEvent<R>>()
 
     fun send(value: S) {
         sender.value = Event.SendEvent(value)
@@ -38,6 +38,14 @@ open class EventState<S, R> {
 
     fun observeReply(owner: LifecycleOwner, action: EventState<S, R>.(R) -> Unit) {
         replier.observe(owner) { action(it.value) }
+    }
+
+    fun observeSendSticky(owner: LifecycleOwner, action: EventState<S, R>.(S) -> Unit) {
+        sender.observeSticky(owner) { action(it.value) }
+    }
+
+    fun observeReplySticky(owner: LifecycleOwner, action: EventState<S, R>.(R) -> Unit) {
+        replier.observeSticky(owner) { action(it.value) }
     }
 }
 
