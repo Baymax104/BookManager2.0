@@ -44,4 +44,8 @@ object MainRepository {
     suspend fun deleteBooks(bookIds: List<Int>) = withContext(Dispatchers.IO) {
         bookDao.deleteBooks(bookIds)
     }
+
+    suspend fun updateBookRank(books: List<Book>) = withContext(Dispatchers.IO) {
+        bookDao.updateBookRank(books)
+    }
 }

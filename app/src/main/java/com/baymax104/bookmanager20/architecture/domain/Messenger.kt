@@ -1,6 +1,7 @@
 package com.baymax104.bookmanager20.architecture.domain
 
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
 import com.baymax104.bookmanager20.util.MData
 import com.baymax104.bookmanager20.util.Null
 
@@ -11,6 +12,9 @@ import com.baymax104.bookmanager20.util.Null
  *@Date 2023/4/9 19:33
  *@Version 1
  */
+
+open class Messenger : ViewModel()
+
 sealed class Event {
     data class SendEvent<E>(val value: E) : Event()
     data class ReplyEvent<E>(val value: E) : Event()

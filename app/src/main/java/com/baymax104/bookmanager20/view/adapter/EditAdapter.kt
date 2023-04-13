@@ -34,8 +34,6 @@ class EditAdapter : BaseAdapter<Book, ItemEditBookBinding>(
         ): Boolean {
             val i = viewHolder.absoluteAdapterPosition
             val j = target.absoluteAdapterPosition
-            // 拖动交换是主动的连续操作，不可通过submitList来触发更新
-            notifyItemMoved(i, j)
             onMoved(i, j)
             return true
         }
@@ -50,5 +48,10 @@ class EditAdapter : BaseAdapter<Book, ItemEditBookBinding>(
 
     override fun onBind(binding: ItemEditBookBinding, item: Book) {
         binding.book = item
+    }
+
+    override fun submitList(list: MutableList<Book>?) {
+        val copyList = if (list != null) ArrayList(list) else null
+        super.submitList(copyList)
     }
 }

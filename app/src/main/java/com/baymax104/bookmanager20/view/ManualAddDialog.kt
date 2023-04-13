@@ -57,4 +57,8 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
         val cancel = OnClickListener { dismiss() }
     }
+
+    override fun onDismiss() {
+        states.book.value = Book()
+    }
 }

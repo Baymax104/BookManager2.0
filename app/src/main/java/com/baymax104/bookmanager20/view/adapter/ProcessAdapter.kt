@@ -21,4 +21,9 @@ class ProcessAdapter : BaseAdapter<Book, ItemProgressBookBinding>(
         binding.book = item
         binding.root.setOnClickListener { onItemClick(item) }
     }
+
+    override fun submitList(list: MutableList<Book>?) {
+        val copyList = if (list != null) ArrayList(list) else null
+        super.submitList(copyList)
+    }
 }

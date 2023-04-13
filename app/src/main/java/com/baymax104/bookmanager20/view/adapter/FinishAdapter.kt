@@ -16,8 +16,12 @@ class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(
     { old, new -> old.id == new.id },
     { old, new -> old == new }
 ) {
-
     override fun onBind(binding: ItemFinishBookBinding, item: Book) {
         binding.book = item
+    }
+
+    override fun submitList(list: MutableList<Book>?) {
+        val copyList = if (list != null) ArrayList(list) else null
+        super.submitList(copyList)
     }
 }

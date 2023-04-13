@@ -19,9 +19,8 @@ object CommonBindingAdapter {
     @JvmStatic
     @BindingAdapter("recycler_data")
     fun <E> RecyclerView.recyclerData(data: List<E>) {
-        // submitList在新旧list是同一个对象时会直接返回
-        val copyList = ArrayList(data)
-        (adapter!! as ListAdapter<E, BaseAdapter.BaseViewHolder>).submitList(copyList)
+        // 对同一列表是否通过submitList更新视图，由各个adapter按需进行重写
+        (adapter!! as ListAdapter<E, BaseAdapter.BaseViewHolder>).submitList(data)
     }
 
     @JvmStatic

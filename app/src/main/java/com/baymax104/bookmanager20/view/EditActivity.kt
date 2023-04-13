@@ -18,7 +18,6 @@ import com.baymax104.bookmanager20.util.showSnackBar
 import com.baymax104.bookmanager20.view.adapter.EditAdapter
 import com.drake.statusbar.immersive
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
-import java.util.*
 
 /**
  *@Description
@@ -68,7 +67,7 @@ class EditActivity : BaseActivity() {
 
     override fun configureBinding(): DataBindingConfig {
         val adapter = EditAdapter()
-        adapter.onMoved = { i, j -> Collections.swap(states.books.value, i, j) }
+        adapter.onMoved = { i, j -> states.books.swap(i, j) }
         adapter.onSwiped = {
             states.books.remove(it.value)
             states.stack.add(it)
@@ -98,7 +97,9 @@ class EditActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         requester.deleteBooks(states.stack.value) {
-            messenger.books.reply(states.books.value)
+            requester.updateBookRank(states.books.value) {
+                messenger.books.reply(states.books.value)
+            }
         }
     }
 }
