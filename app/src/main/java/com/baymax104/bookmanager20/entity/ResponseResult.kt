@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *@Version 1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Result<T> @JsonCreator constructor(
+data class ResponseResult<T> @JsonCreator constructor(
     @JsonAlias("errcode", "ret")
     @JsonProperty("code")
     val code: Int,

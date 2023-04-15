@@ -5,7 +5,6 @@ import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.Callback
 import com.baymax104.bookmanager20.util.mainLaunch
-import java.util.*
 
 /**
  *@Description
@@ -34,43 +33,23 @@ class ProcessRequester : Requester() {
 
     inline fun requestBookInfo(isbn: String, crossinline callback: Callback<Book>) =
         mainLaunch {
-            try {
+            ResultCallback.build(callback)(runCatching {
                 val (code, message, data) = repo.requestBookInfo(isbn)
                 when (code) {
-                    0 -> Success(data)
-                    else -> Fail(Exception(message))
+                    0 -> data
+                    else -> throw Exception(message)
                 }
-            } catch (e: Exception) {
-                Fail(e)
-            }.let {
-                ResultCallback<Book>().apply(callback)(it)
-            }
+            })
         }
 
     inline fun insertProcessBook(book: Book, crossinline callback: Callback<Book>) =
         mainLaunch {
-            try {
-                book.startTime = Date()
-                val i = repo.insertProcessBook(book)
-                book.id = i.toInt()
-                Success(book)
-            } catch (e: Exception) {
-                Fail(e)
-            }.let {
-                ResultCallback<Book>().apply(callback)(it)
-            }
+            ResultCallback.build(callback)(runCatching { repo.insertProcessBook(book) })
         }
 
     inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
         mainLaunch {
-            try {
-                val books = repo.queryAllProcessBook()
-                Success(books)
-            } catch (e: Exception) {
-                Fail(e)
-            }.let {
-                ResultCallback<List<Book>>().apply(callback)(it)
-            }
+            ResultCallback.build(callback)(runCatching { repo.queryAllProcessBook() })
         }
 
 }

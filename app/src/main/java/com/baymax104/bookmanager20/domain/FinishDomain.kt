@@ -19,13 +19,6 @@ class FinishRequester : Requester() {
 
     inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
         mainLaunch {
-            try {
-                val books = repo.queryAllFinishBook()
-                Success(books)
-            } catch (e: Exception) {
-                Fail(e)
-            }.let {
-                ResultCallback<List<Book>>().apply(callback)(it)
-            }
+            ResultCallback.build(callback)(runCatching { repo.queryAllFinishBook() })
         }
 }

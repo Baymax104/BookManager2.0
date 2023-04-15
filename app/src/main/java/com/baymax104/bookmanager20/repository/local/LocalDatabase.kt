@@ -1,9 +1,10 @@
-package com.baymax104.bookmanager20.dataSource.local
+package com.baymax104.bookmanager20.repository.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.entity.History
 import com.baymax104.bookmanager20.util.RoomConverter
 
 /**
@@ -14,13 +15,15 @@ import com.baymax104.bookmanager20.util.RoomConverter
  *@Version 1
  */
 @TypeConverters(RoomConverter::class)
-@Database(entities = [Book::class], version = 1)
+@Database(entities = [Book::class, History::class], version = 2)
 abstract class LocalDatabase : RoomDatabase() {
     companion object {
         const val DatabaseName = "BookManager"
     }
 
     abstract fun bookDao(): BookDao
+
+    abstract fun historyDao(): HistoryDao
 }
 
 lateinit var Database: LocalDatabase

@@ -1,10 +1,22 @@
 package com.baymax104.bookmanager20.view.binding
 
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.baymax104.bookmanager20.R
+import com.baymax104.bookmanager20.util.DateFormatter
 import com.baymax104.bookmanager20.view.adapter.BaseAdapter
+import com.blankj.utilcode.util.ConvertUtils
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.CenterInside
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.drake.statelayout.StateLayout
+import java.util.*
 
 /**
  *@Description
@@ -32,4 +44,36 @@ object CommonBindingAdapter {
             showEmpty()
         }
     }
+
+    @JvmStatic
+    @BindingAdapter("img", "img_scaleType", "img_default", requireAll = false)
+    fun ImageView.img(
+        uriPath: String?,
+        scaleType: ImageView.ScaleType?,
+        default: Boolean
+    ) {
+        val scale = when (scaleType) {
+            ImageView.ScaleType.FIT_CENTER -> FitCenter()
+            ImageView.ScaleType.CENTER_INSIDE -> CenterInside()
+            else -> CenterCrop()
+        }
+        var options = RequestOptions()
+            .skipMemoryCache(true)
+            .transform(scale, RoundedCorners(ConvertUtils.dp2px(10f)))
+        if (default) {
+            options = options.placeholder(R.drawable.no_cover)
+        }
+        Glide.with(this)
+            .asBitmap()
+            .load(uriPath)
+            .apply(options)
+            .into(this)
+    }
+
+    @JvmStatic
+    @BindingAdapter("text_date")
+    fun TextView.textDate(date: Date?) {
+        text = date?.let { DateFormatter.format(it) }
+    }
+
 }

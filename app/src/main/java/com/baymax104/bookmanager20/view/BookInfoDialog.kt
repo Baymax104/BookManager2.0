@@ -51,8 +51,8 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
         val modify = OnClickListener { messenger.modifyBook.send(states.book.value) }
 
         val confirm = OnClickListener {
-            if (states.book.value.page <= 0) {
-                ToastUtils.showShort("页数必须大于0")
+            if (states.book.value.page <= 1) {
+                ToastUtils.showShort("页数必须大于1")
                 return@OnClickListener
             }
             dismissWith {

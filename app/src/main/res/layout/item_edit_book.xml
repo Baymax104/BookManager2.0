@@ -95,7 +95,7 @@
                         android:layout_weight="1"
                         android:textColor="@color/gray"
                         android:gravity="end"
-                        book_date="@{book.startTime}"/>
+                        text_date="@{book.startTime}"/>
 
             </LinearLayout>
 

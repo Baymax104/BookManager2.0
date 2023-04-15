@@ -1,7 +1,7 @@
-package com.baymax104.bookmanager20.dataSource.web
+package com.baymax104.bookmanager20.repository.web
 
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.entity.Result
+import com.baymax104.bookmanager20.entity.ResponseResult
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -16,8 +16,8 @@ import retrofit2.http.Query
 interface BookService {
 
     @GET("{isbn}")
-    suspend fun requestBookInfo(@Path("isbn") isbn: String): Result<Book>
+    suspend fun requestBookInfo(@Path("isbn") isbn: String): ResponseResult<Book>
 
     @GET("https://api.ibook.tech/v1/book/isbn")
-    suspend fun requestBook(@Query("isbn") isbn: String): Result<Book>
+    suspend fun requestBook(@Query("isbn") isbn: String): ResponseResult<Book>
 }

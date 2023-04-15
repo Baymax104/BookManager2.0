@@ -2,8 +2,8 @@ package com.baymax104.bookmanager20.repository
 
 import android.app.Application
 import androidx.room.Room
-import com.baymax104.bookmanager20.dataSource.local.Database
-import com.baymax104.bookmanager20.dataSource.local.LocalDatabase
+import com.baymax104.bookmanager20.repository.local.Database
+import com.baymax104.bookmanager20.repository.local.LocalDatabase
 
 /**
  *@Description
@@ -19,6 +19,6 @@ class AppApplication : Application() {
             this,
             LocalDatabase::class.java,
             LocalDatabase.DatabaseName
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 }

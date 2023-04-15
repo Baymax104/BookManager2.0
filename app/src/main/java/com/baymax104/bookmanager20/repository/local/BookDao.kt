@@ -1,4 +1,4 @@
-package com.baymax104.bookmanager20.dataSource.local
+package com.baymax104.bookmanager20.repository.local
 
 import androidx.room.Dao
 import androidx.room.Insert

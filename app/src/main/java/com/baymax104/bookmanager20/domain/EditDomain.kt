@@ -30,31 +30,21 @@ class EditRequester : Requester() {
         removedItems: List<EditAdapter.RemovedItem>,
         crossinline callback: Callback<Null>
     ) = mainLaunch {
-        try {
-            // there is no item removed
-            if (removedItems.isEmpty()) {
-                Success(null)
-            } else {
+        ResultCallback.build(callback)(runCatching {
+            // there are items removed
+            if (removedItems.isNotEmpty()) {
                 val ids = removedItems.map { it.value.id }
-                val items = repo.deleteBooks(ids)
-                if (items == ids.size) {
-                    Success(null)
-                } else {
-                    throw Exception("删除个数错误")
-                }
+                repo.deleteBooks(ids)
             }
-        } catch (e: Exception) {
-            Fail(e)
-        }.let {
-            ResultCallback<Null>().apply(callback)(it)
-        }
+            null
+        })
     }
 
     inline fun updateBookRank(
         books: List<Book>,
         crossinline callback: Callback<Null>
     ) = mainLaunch {
-        try {
+        ResultCallback.build(callback)(runCatching {
             // check if list has been swapped
             var hasSwapped = false
             for ((i, book) in books.withIndex()) {
@@ -63,20 +53,10 @@ class EditRequester : Requester() {
                 }
                 book.tableRank = i
             }
-            if (!hasSwapped) {
-                Success(null)
-            } else {
-                // list is swapped
-                val i = repo.updateBookRank(books)
-                if (i != books.size) {
-                    throw Exception("更新顺序个数错误")
-                }
-                Success(null)
+            if (hasSwapped) {
+                repo.updateBookRank(books)
             }
-        } catch (e: Exception) {
-            Fail(e)
-        }.let {
-            ResultCallback<Null>().apply(callback)(it)
-        }
+            null
+        })
     }
 }

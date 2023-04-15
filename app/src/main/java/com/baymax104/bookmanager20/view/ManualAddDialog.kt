@@ -48,8 +48,8 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
 
         val confirm = OnClickListener {
             val book = states.book.value
-            if (book.page <= 0) {
-                ToastUtils.showShort("页数必须大于0")
+            if (book.page <= 1) {
+                ToastUtils.showShort("页数必须大于1")
             } else {
                 dismissWith { messenger.insertBook.send(book) }
             }

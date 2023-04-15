@@ -1,7 +1,5 @@
 package com.baymax104.bookmanager20.util
 
-import com.blankj.utilcode.util.ToastUtils
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
@@ -25,10 +23,4 @@ fun mainLaunch(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
 ) = MainScope.launch(context, start, block)
-
-val BaseExceptionHandler = CoroutineExceptionHandler { context, throwable ->
-    ToastUtils.showShort("$context: ${throwable.message}")
-}
-
-
 

@@ -18,6 +18,7 @@ class FinishAdapter : BaseAdapter<Book, ItemFinishBookBinding>(
 ) {
     override fun onBind(binding: ItemFinishBookBinding, item: Book) {
         binding.book = item
+        binding.root.setOnClickListener { onItemClick(item) }
     }
 
     override fun submitList(list: MutableList<Book>?) {

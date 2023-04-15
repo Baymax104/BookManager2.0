@@ -38,6 +38,10 @@ infix fun Context.start(activity: KClass<*>) {
     startActivity(Intent(this, activity.java))
 }
 
+infix fun Fragment.start(activity: KClass<*>) {
+    startActivity(Intent(requireContext(), activity.java))
+}
+
 infix fun AppCompatActivity.showSnackBar(onClickListener: OnClickListener) {
     SnackbarUtils.with(window.decorView)
         .setMessage("已删除")

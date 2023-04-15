@@ -14,6 +14,7 @@ import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
+import com.baymax104.bookmanager20.domain.HistoryMessenger
 import com.baymax104.bookmanager20.domain.ProcessMessenger
 import com.baymax104.bookmanager20.domain.ProcessRequester
 import com.baymax104.bookmanager20.entity.Book
@@ -46,6 +47,8 @@ class ProcessFragment : BaseFragment() {
     private val editMessenger: EditMessenger by applicationViewModels()
 
     private val mainState: MainActivity.States by activityViewModels()
+
+    private val historyMessenger: HistoryMessenger by applicationViewModels()
 
     private val cameraLauncher = registerLauncher {
         ImageUtil.compress(activity, states.uriPath) { file ->
@@ -104,6 +107,11 @@ class ProcessFragment : BaseFragment() {
 
     override fun configureBinding(): DataBindingConfig {
         val adapter = ProcessAdapter()
+        adapter.onItemClick = {
+            historyMessenger.book.send(it)
+            this start HistoryActivity::class
+        }
+
         return DataBindingConfig(R.layout.fragment_progress, BR.state, states)
             .add(
                 BR.adapter to adapter,

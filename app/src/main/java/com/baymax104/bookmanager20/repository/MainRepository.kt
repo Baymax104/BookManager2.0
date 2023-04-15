@@ -1,12 +1,14 @@
 package com.baymax104.bookmanager20.repository
 
-import androidx.room.Transaction
-import com.baymax104.bookmanager20.dataSource.local.Database
-import com.baymax104.bookmanager20.dataSource.web.BookService
-import com.baymax104.bookmanager20.dataSource.web.WebService
+import androidx.room.withTransaction
 import com.baymax104.bookmanager20.entity.Book
+import com.baymax104.bookmanager20.entity.History
+import com.baymax104.bookmanager20.repository.local.Database
+import com.baymax104.bookmanager20.repository.web.BookService
+import com.baymax104.bookmanager20.repository.web.WebService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 /**
  *@Description
@@ -21,31 +23,55 @@ object MainRepository {
 
     private val bookDao = Database.bookDao()
 
+    private val historyDao = Database.historyDao()
 
-    @Transaction
-    suspend fun insertProcessBook(book: Book) = withContext(Dispatchers.IO) {
-        val all = bookDao.queryAllProcess()
-        book.tableRank = all.size
-        bookDao.insertProcess(book)
-    }
 
     suspend fun requestBookInfo(isbn: String) = withContext(Dispatchers.IO) {
         bookService.requestBookInfo(isbn)
     }
 
-    suspend fun queryAllProcessBook() = withContext(Dispatchers.IO) {
+    suspend fun queryAllProcessBook() = Database.withTransaction {
         bookDao.queryAllProcess()
     }
 
-    suspend fun queryAllFinishBook() = withContext(Dispatchers.IO) {
+    suspend fun queryAllFinishBook() = Database.withTransaction {
         bookDao.queryAllFinish()
     }
 
-    suspend fun deleteBooks(bookIds: List<Int>) = withContext(Dispatchers.IO) {
-        bookDao.deleteBooks(bookIds)
+    suspend fun queryBookHistory(bookId: Int) = Database.withTransaction {
+        historyDao.queryBookHistories(bookId)
     }
 
-    suspend fun updateBookRank(books: List<Book>) = withContext(Dispatchers.IO) {
-        bookDao.updateBookRank(books)
+    suspend fun insertProcessBook(book: Book) = Database.withTransaction {
+        // set book
+        book.startTime = Date()
+        val all = bookDao.queryAllProcess()
+        book.tableRank = all.size
+
+        // insert book
+        val id = bookDao.insertProcess(book)
+        book.id = id.toInt()
+
+        // insert initial history
+        val history = History(book).apply { updateTime = Date() }
+        // no need to obtain id, query again while entering History Page
+        historyDao.insertHistory(history)
+
+        book
+    }
+
+    suspend fun insertHistory(history: History): Unit = Database.withTransaction {
+        historyDao.insertHistory(history)
+    }
+
+    suspend fun updateBookRank(books: List<Book>): Unit = Database.withTransaction {
+        val i = bookDao.updateBookRank(books)
+        if (i != books.size) throw Exception("更新顺序错误")
+    }
+
+    suspend fun deleteBooks(bookIds: List<Int>): Unit = Database.withTransaction {
+        val i = bookDao.deleteBooks(bookIds)
+        if (i != bookIds.size) throw Exception("删除图书错误")
+        historyDao.deleteBooksHistories(bookIds)
     }
 }

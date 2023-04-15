@@ -34,8 +34,9 @@
                 android:layout_height="200dp"
                 android:id="@+id/book_cover"
                 android:layout_gravity="center_horizontal"
-                book_photo="@{state.book.photo}"
-                book_photo_scaleType="@{ScaleType.FIT_CENTER}"/>
+                img="@{state.book.photo}"
+                img_scaleType="@{ScaleType.FIT_CENTER}"
+                img_default="@{true}"/>
 
         <LinearLayout
                 android:layout_width="match_parent"

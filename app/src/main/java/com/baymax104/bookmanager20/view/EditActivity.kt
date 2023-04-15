@@ -16,6 +16,7 @@ import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.util.lightClone
 import com.baymax104.bookmanager20.util.showSnackBar
 import com.baymax104.bookmanager20.view.adapter.EditAdapter
+import com.blankj.utilcode.util.ToastUtils
 import com.drake.statusbar.immersive
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 
@@ -97,9 +98,13 @@ class EditActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         requester.deleteBooks(states.stack.value) {
-            requester.updateBookRank(states.books.value) {
-                messenger.books.reply(states.books.value)
+            success {
+                requester.updateBookRank(states.books.value) {
+                    success { messenger.books.reply(states.books.value) }
+                    fail { ToastUtils.showShort(it.message) }
+                }
             }
+            fail { ToastUtils.showShort(it.message) }
         }
     }
 }

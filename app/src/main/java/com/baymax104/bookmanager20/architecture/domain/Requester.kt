@@ -12,19 +12,21 @@ import androidx.lifecycle.ViewModel
 open class Requester : ViewModel() {
     class ResultCallback<T> {
         private var onSuccess: (T) -> Unit = {}
-        private var onFail: (Exception) -> Unit = {}
+        private var onFail: (Throwable) -> Unit = {}
+
+        companion object {
+            inline fun <T> build(block: ResultCallback<T>.() -> Unit) =
+                ResultCallback<T>().apply(block)
+        }
+
         fun success(callback: (T) -> Unit) = apply { onSuccess = callback }
-        fun fail(callback: (Exception) -> Unit) = apply { onFail = callback }
-        operator fun invoke(resultState: ResultState<T>) {
-            when (resultState) {
-                is Success -> onSuccess(resultState.data)
-                is Fail -> onFail(resultState.error)
+        fun fail(callback: (Throwable) -> Unit) = apply { onFail = callback }
+        operator fun invoke(result: Result<T>) {
+            when {
+                result.isSuccess -> result.onSuccess(onSuccess)
+                result.isFailure -> result.onFailure(onFail)
             }
         }
     }
-
-    sealed class ResultState<out T>
-    data class Success<out T>(val data: T) : ResultState<T>()
-    data class Fail(val error: Exception) : ResultState<Nothing>()
 
 }
