@@ -42,40 +42,65 @@ class HistoryRequester : Requester() {
         crossinline callback: Callback<Pair<History, Int>>
     ) = mainLaunch {
         val result = runCatching {
-            val mutableList = historyList.toMutableList()
-            mutableList.add(history)
-
             // the new value must be behind the value whose start is equal to it
-            val histories = mutableList.asSequence()
+            val histories = historyList.asSequence()
                 .filter { !it.duplicate }
                 .sortedBy { it.start }
                 .toMutableList()
-            val index = histories.indexOf(history)
-            val previous = histories[index - 1]
-            val next = histories.getOrNull(index + 1)  // the next may not exist
+
+            // find previous
+            val previous = histories.indexOfFirst { it.start > history.start }
+                .takeIf { it != -1 }
+                ?.let { Pair(it - 1, histories[it - 1]) }
+                ?: Pair(histories.lastIndex, histories.last())
+            // find next, it may have several ranges between previous and next
+            val next = histories.indexOfFirst { it.end >= history.end }
+                .takeIf { it != -1 }
+                ?.let { Pair(it, histories[it]) }
 
             // check duplicate
-            // previous and next have no interval or the interval's length is 1
-            if (next != null && previous.end >= next.start - 1) {
-                // there is no space to insert new range, set it duplicate
+            // the new range is within previous range
+            if (history.end <= previous.second.end) {
                 history.duplicate = true
             }
-            // the new range is within previous range
-            if (history.end <= previous.end) {
-                history.duplicate = true
+            // there are intervals between previous and next
+            if (next != null && history.end > previous.second.end) {
+                var hasSpace = false
+                for (i in previous.first + 1..next.first) {
+                    // there are spaces between two interval
+                    if (histories[i - 1].end < histories[i].start - 1) {
+                        hasSpace = true
+                    }
+                }
+                if (!hasSpace) {
+                    history.duplicate = true
+                } else {  // merge the ranges between previous and next
+                    for (i in previous.first + 1 until next.first) {
+                        histories[i].duplicate = true
+                    }
+                }
+            }
+            // the new range includes some ranges, but no next range
+            if (next == null && previous.first + 1 <= histories.size) {
+                histories.listIterator(previous.first + 1)
+                    .forEach { it.duplicate = true }
             }
 
-            // the new range isn't duplicate, cope with it's boundary
+            // the new range isn't duplicate, shrink it's boundary
             if (!history.duplicate) {
-                // cope with start overlap
-                if (history.start <= previous.end) {
-                    history.start = previous.end + 1  // shrink the new value range
+                // shrink start boundary
+                if (history.start <= previous.second.end) {
+                    history.start = previous.second.end + 1
                 }
-                // cope with end overlap
-                if (next != null && next.start <= history.end) {
-                    history.end = next.start - 1  // shrink the new value range
+                // shrink end boundary
+                if (next != null && next.second.start <= history.end) {
+                    history.end = next.second.start - 1
                 }
             }
+
+            // update duplicate
+            val duplicateHistories = histories.filter { it.duplicate }
+            repo.updateHistoryDuplicate(duplicateHistories)
 
             // insert
             val id = repo.insertHistory(history)

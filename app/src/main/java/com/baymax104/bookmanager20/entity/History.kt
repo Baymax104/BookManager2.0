@@ -95,6 +95,7 @@ class History(book: Book) : BaseObservable(), LightClone<History> {
         return result
     }
 
+
     override fun clone(): History {
         return History().apply {
             id = this@History.id
@@ -104,6 +105,10 @@ class History(book: Book) : BaseObservable(), LightClone<History> {
             end = this@History.end
             total = this@History.total
         }
+    }
+
+    override fun toString(): String {
+        return "History(id=$id, bookId=$bookId, updateTime=$updateTime, start=$start, end=$end, total=$total, duplicate=$duplicate)"
     }
 }
 

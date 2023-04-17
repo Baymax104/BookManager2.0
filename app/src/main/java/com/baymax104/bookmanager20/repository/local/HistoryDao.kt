@@ -3,6 +3,7 @@ package com.baymax104.bookmanager20.repository.local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.baymax104.bookmanager20.entity.History
 
 /**
@@ -23,4 +24,7 @@ interface HistoryDao {
 
     @Query("delete from History where bookId in (:bookIds)")
     suspend fun deleteBooksHistories(bookIds: List<Int>): Int
+
+    @Update
+    suspend fun updateHistoryDuplicate(histories: List<History>): Int
 }

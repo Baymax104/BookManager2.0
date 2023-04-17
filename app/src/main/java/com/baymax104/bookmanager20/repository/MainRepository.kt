@@ -64,6 +64,10 @@ object MainRepository {
         historyDao.insertHistory(history)
     }
 
+    suspend fun updateHistoryDuplicate(histories: List<History>) = Database.withTransaction {
+        historyDao.updateHistoryDuplicate(histories)
+    }
+
     suspend fun updateBookRank(books: List<Book>): Unit = Database.withTransaction {
         val i = bookDao.updateBookRank(books)
         if (i != books.size) throw Exception("更新顺序错误")
