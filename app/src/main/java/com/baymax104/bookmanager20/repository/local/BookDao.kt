@@ -19,10 +19,10 @@ interface BookDao {
     @Insert
     suspend fun insertProcess(book: Book): Long
 
-    @Query("select * from Book where progress < page order by tableRank asc")
+    @Query("select * from Book where progress < 100 order by tableRank asc")
     suspend fun queryAllProcess(): MutableList<Book>
 
-    @Query("select * from Book where progress >= page order by tableRank asc")
+    @Query("select * from Book where progress >= 100 order by tableRank asc")
     suspend fun queryAllFinish(): MutableList<Book>
 
     @Query("delete from Book where id in (:bookIds)")
@@ -30,4 +30,7 @@ interface BookDao {
 
     @Update
     suspend fun updateBookRank(books: List<Book>): Int
+
+    @Query("update Book set progress = :progress where id = :bookId")
+    suspend fun updateBookProgress(bookId: Int, progress: Int): Int
 }

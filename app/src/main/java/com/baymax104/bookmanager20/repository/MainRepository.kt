@@ -53,20 +53,25 @@ object MainRepository {
         book.id = id.toInt()
 
         // insert initial history
-        val history = History(book).apply { updateTime = Date() }
+        val history = History(book)
         // no need to obtain id, query again while entering History Page
         historyDao.insertHistory(history)
 
         book
     }
 
-    suspend fun insertHistory(history: History): Unit = Database.withTransaction {
+    suspend fun insertHistory(history: History) = Database.withTransaction {
         historyDao.insertHistory(history)
     }
 
     suspend fun updateBookRank(books: List<Book>): Unit = Database.withTransaction {
         val i = bookDao.updateBookRank(books)
         if (i != books.size) throw Exception("更新顺序错误")
+    }
+
+    suspend fun updateBookProgress(bookId: Int, progress: Int): Unit = Database.withTransaction {
+        val i = bookDao.updateBookProgress(bookId, progress)
+        if (i != 1) throw Exception("更新进度错误")
     }
 
     suspend fun deleteBooks(bookIds: List<Int>): Unit = Database.withTransaction {

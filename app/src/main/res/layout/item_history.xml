@@ -25,7 +25,6 @@
             <ImageView
                     android:layout_width="18dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/time_dot"
                     android:layout_gravity="center_vertical"
                     history_time_dot="@{history}"/>
 
@@ -69,9 +68,7 @@
                     android:paddingHorizontal="10dp"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    history_page_start="@{history.start}"
-                    history_page_end="@{history.end}"
-                    history_page_total="@{history.total}"/>
+                    history_type="@{history.type}"/>
         </LinearLayout>
 
     </LinearLayout>

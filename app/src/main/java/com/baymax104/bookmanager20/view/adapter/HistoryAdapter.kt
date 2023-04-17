@@ -19,4 +19,9 @@ class HistoryAdapter : BaseAdapter<History, ItemHistoryBinding>(
     override fun onBind(binding: ItemHistoryBinding, item: History) {
         binding.history = item
     }
+
+    override fun submitList(list: MutableList<History>?) {
+        val copyList = list?.reversed()
+        super.submitList(copyList)
+    }
 }

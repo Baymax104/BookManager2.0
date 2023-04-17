@@ -12,7 +12,7 @@ import com.baymax104.bookmanager20.architecture.*
 import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
-import com.baymax104.bookmanager20.databinding.FragmentProgressBinding
+import com.baymax104.bookmanager20.databinding.FragmentProcessBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.HistoryMessenger
 import com.baymax104.bookmanager20.domain.ProcessMessenger
@@ -99,6 +99,15 @@ class ProcessFragment : BaseFragment() {
             }
         }
 
+        historyMessenger.book.observeReply(viewLifecycleOwner) { book ->
+            val find = states.books.value.find { it.id == book.id }
+            if (find == null) {
+                ToastUtils.showShort("更新信息错误")
+            } else {
+                find.progress = book.progress
+            }
+        }
+
         requester.queryAllBook {
             success { states.books.value = it }
             fail { ToastUtils.showShort(it.message) }
@@ -112,7 +121,7 @@ class ProcessFragment : BaseFragment() {
             this start HistoryActivity::class
         }
 
-        return DataBindingConfig(R.layout.fragment_progress, BR.state, states)
+        return DataBindingConfig(R.layout.fragment_process, BR.state, states)
             .add(
                 BR.adapter to adapter,
                 BR.handler to Handler()
@@ -139,7 +148,7 @@ class ProcessFragment : BaseFragment() {
     }
 
     override fun initUIComponent(binding: ViewDataBinding) {
-        binding as FragmentProgressBinding
+        binding as FragmentProcessBinding
         binding.bookList.itemAnimator = SlideInRightAnimator()
     }
 }

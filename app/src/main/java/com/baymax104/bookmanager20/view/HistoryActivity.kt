@@ -2,13 +2,11 @@ package com.baymax104.bookmanager20.view
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View.OnClickListener
 import androidx.databinding.ViewDataBinding
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.architecture.domain.State
-import com.baymax104.bookmanager20.architecture.domain.StateHolder
-import com.baymax104.bookmanager20.architecture.domain.activityViewModels
-import com.baymax104.bookmanager20.architecture.domain.applicationViewModels
+import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseActivity
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityHistoryBinding
@@ -16,10 +14,11 @@ import com.baymax104.bookmanager20.domain.HistoryMessenger
 import com.baymax104.bookmanager20.domain.HistoryRequester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.entity.History
+import com.baymax104.bookmanager20.util.showOnce
 import com.baymax104.bookmanager20.view.adapter.HistoryAdapter
 import com.blankj.utilcode.util.BarUtils
 import com.blankj.utilcode.util.ToastUtils
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator
 
 /**
  *@Description
@@ -53,6 +52,16 @@ class HistoryActivity : BaseActivity() {
             }
         }
 
+        messenger.updateHistory.observeReply(this) { history ->
+            requester.insertHistory(history, states.histories.value) {
+                success { (history, progress) ->
+                    states.book.value.progress = progress
+                    states.histories.add(history)
+                }
+                fail { ToastUtils.showShort(it.message) }
+            }
+        }
+
     }
 
     override fun configureBinding(): DataBindingConfig {
@@ -64,14 +73,23 @@ class HistoryActivity : BaseActivity() {
             )
     }
 
-    inner class Handler
+    inner class Handler {
+        val update = OnClickListener {
+            if (states.book.value.progress < 100) {
+                messenger.updateHistory.send(states.book.value)
+                this@HistoryActivity showOnce UpdateDialog(this@HistoryActivity)
+            } else {
+                // finish book
+            }
+        }
+    }
 
     override fun initUIComponent(binding: ViewDataBinding) {
         binding as ActivityHistoryBinding
         BarUtils.setStatusBarLightMode(this, true)
         binding.toolbar.setNavigationIcon(R.drawable.back)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.historyList.itemAnimator = SlideInUpAnimator()
+        binding.historyList.itemAnimator = SlideInDownAnimator()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -79,5 +97,10 @@ class HistoryActivity : BaseActivity() {
             android.R.id.home -> finish()
         }
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        messenger.book.reply(states.book.value)
     }
 }

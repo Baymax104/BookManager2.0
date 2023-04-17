@@ -54,7 +54,7 @@ class Book(builder: Builder) : BaseObservable(), LightClone<Book> {
         }
 
     @get:Bindable
-    var progress = builder.progress  // 已看页数
+    var progress = builder.progress  // 已看页数百分比
         set(value) {
             field = value
             notifyPropertyChanged(BR.progress)

@@ -15,7 +15,7 @@ import com.baymax104.bookmanager20.util.RoomConverter
  *@Version 1
  */
 @TypeConverters(RoomConverter::class)
-@Database(entities = [Book::class, History::class], version = 2)
+@Database(entities = [Book::class, History::class], version = 4)
 abstract class LocalDatabase : RoomDatabase() {
     companion object {
         const val DatabaseName = "BookManager"

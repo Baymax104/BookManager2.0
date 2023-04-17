@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/book_list"
-                    tools:listitem="@layout/item_progress_book"
+                    tools:listitem="@layout/item_edit_book"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
                     android:adapter="@{adapter}"

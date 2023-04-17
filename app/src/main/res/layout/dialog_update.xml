@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.text.InputType"/>
+        <variable
+                name="state"
+                type="com.baymax104.bookmanager20.view.UpdateDialog.States" />
+        <variable
+                name="handler"
+                type="com.baymax104.bookmanager20.view.UpdateDialog.Handler" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/input_book_progress"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="10dp" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="5dp"
+                    android:paddingHorizontal="25dp">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="10dp">
+                    <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:textSize="15sp"
+                            android:textColor="@color/black"
+                            history_time="@{state.history.updateTime}" />
+                    <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/calendar"
+                            android:onClick="@{handler.selectDate}"/>
+                </LinearLayout>
+
+                <include
+                        layout="@layout/layout_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginBottom="10dp"
+                        bind:hint="@{@string/update_start}"
+                        bind:handler="@{s->state.history.setStart(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"
+                        bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"/>
+                <include
+                        layout="@layout/layout_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        bind:hint="@{@string/update_end}"
+                        bind:handler="@{s->state.history.setEnd(!s.toString().equals(``) ? Integer.parseInt(s.toString()) : 0)}"
+                        bind:inputType="@{InputType.TYPE_CLASS_NUMBER}"/>
+
+            </LinearLayout>
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@color/separator_color"
+                    android:layout_marginTop="10dp" />
+
+            <include
+                    layout="@layout/layout_dialog_button"
+                    bind:confirm="@{handler.confirm}"
+                    bind:cancel="@{handler.cancel}"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

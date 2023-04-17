@@ -19,7 +19,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:ignore="ContentDescription">
+            tools:ignore="ContentDescription,RelativeOverlap">
 
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
@@ -56,21 +56,33 @@
 
             <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:orientation="vertical"
                     android:background="@color/bar_color">
-                <FrameLayout
+                <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp">
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp">
+
                     <ProgressBar
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/history_progress_bar"
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="10dp"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:progressDrawable="@drawable/layer_progress_bar"
-                            android:layout_margin="10dp"
-                            book_progress="@{state.book}"/>
-                </FrameLayout>
+                            android:progress="@{state.book.progress}" />
+
+                    <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:text="@{state.book.progress + `%`}"/>
+                </LinearLayout>
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -81,9 +93,10 @@
                     <ImageButton
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/restart"
                             android:backgroundTint="@color/transparent"
-                            android:layout_marginEnd="5dp"/>
+                            android:layout_marginEnd="5dp"
+                            book_type="@{state.book}"
+                            android:onClick="@{handler.update}"/>
 
                     <ImageButton
                             android:layout_width="35dp"

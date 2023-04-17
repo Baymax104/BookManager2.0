@@ -11,57 +11,57 @@
 
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="85dp"
-            app:cardCornerRadius="10dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
             android:layout_margin="7dp"
             app:cardElevation="5dp"
             tools:ignore="RelativeOverlap,ContentDescription">
 
         <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginBottom="6dp">
+                android:layout_margin="10dp">
 
             <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:orientation="vertical"
                     android:layout_gravity="start">
 
                 <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"
                         android:textSize="17sp"
                         android:textColor="@color/black"
-                        android:layout_gravity="start|center_vertical"
+                        android:gravity="start|center_vertical"
                         android:maxLines="1"
-                        android:text="@{book.name ?? `未添加书名`}"
-                        android:ellipsize="end" />
+                        android:ellipsize="end"
+                        android:text="@{book.name ?? `未添加书名`}" />
 
                 <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"
                         android:orientation="horizontal">
 
                     <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_alignParentStart="true"
+                            android:gravity="center_vertical"
                             android:textColor="@color/gray"
                             android:textSize="13sp"
                             android:maxLines="1"
                             android:maxEms="10"
-                            android:text="@{book.author ?? `佚名`}"
-                            android:ellipsize="end" />
+                            android:ellipsize="end"
+                            android:text="@{book.author ?? `佚名`}" />
 
                     <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
+                            android:gravity="center_vertical"
                             android:textColor="@color/gray"
                             text_date="@{book.startTime}" />
                 </RelativeLayout>
@@ -69,28 +69,25 @@
 
             <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="18dp"
+                    android:layout_height="20dp"
                     android:orientation="horizontal">
 
                 <ProgressBar
                         android:layout_width="0dp"
-                        android:layout_height="6dp"
-                        android:layout_weight="9"
-                        android:layout_gravity="start|center_vertical"
+                        android:layout_height="8dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:progressDrawable="@drawable/layer_progress_bar"
-                        android:max="100"
-                        book_progress="@{book}" />
+                        android:progress="@{book.progress}" />
 
                 <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="40dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:layout_gravity="end"
-                        android:layout_marginStart="7dp"
-                        android:gravity="center"
-                        android:text="@{book.progress + `/` + book.page}"
-                        android:textSize="13sp"
+                        android:gravity="end|center_vertical"
+                        android:text="@{book.progress + `%`}"
+                        android:textSize="14sp"
                         android:textColor="@color/gray" />
 
             </LinearLayout>

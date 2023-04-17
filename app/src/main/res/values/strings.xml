@@ -36,4 +36,6 @@
     <string name="export">导出</string>
     <string name="book_info_title">添加以下图书</string>
     <string name="modify_info_tip">点击信息框可修改部分信息</string>
+    <string name="update_start">起始页数</string>
+    <string name="update_end">结束页数</string>
 </resources>

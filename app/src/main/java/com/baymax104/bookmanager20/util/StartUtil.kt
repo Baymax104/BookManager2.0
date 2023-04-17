@@ -3,6 +3,7 @@ package com.baymax104.bookmanager20.util
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.view.View
 import android.view.View.OnClickListener
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.blankj.utilcode.util.SnackbarUtils
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.BasePopupView
+import com.lxj.xpopupext.listener.TimePickerListener
+import com.lxj.xpopupext.popup.TimePickerPopup
+import java.util.*
 import kotlin.reflect.KClass
 
 /**
@@ -65,4 +69,27 @@ fun Fragment.registerLauncher(onSuccess: () -> Unit): ActivityResultLauncher<Int
         }
     })
     return launcher
+}
+
+infix fun Context.showTimePicker(onConfirm: (Date) -> Unit) {
+    val default = Calendar.getInstance()
+    val start = 1999
+    val end = default[Calendar.YEAR] + 20
+    val picker = TimePickerPopup(this)
+        .setDefaultDate(Calendar.getInstance())
+        .setYearRange(start, end)
+        .setTimePickerListener(object : TimePickerListener {
+            override fun onTimeChanged(date: Date?) {
+            }
+
+            override fun onTimeConfirm(date: Date?, view: View?) {
+                if (date != null) {
+                    onConfirm(date)
+                }
+            }
+
+            override fun onCancel() {
+            }
+        })
+    showOnce(picker)
 }
