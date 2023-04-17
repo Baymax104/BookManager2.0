@@ -1,11 +1,13 @@
 package com.baymax104.bookmanager20.domain
 
+import androidx.room.withTransaction
 import com.baymax104.bookmanager20.architecture.domain.EventState
 import com.baymax104.bookmanager20.architecture.domain.Messenger
 import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.entity.History
 import com.baymax104.bookmanager20.repository.MainRepository
+import com.baymax104.bookmanager20.repository.local.Database
 import com.baymax104.bookmanager20.util.Callback
 import com.baymax104.bookmanager20.util.mainLaunch
 
@@ -98,21 +100,26 @@ class HistoryRequester : Requester() {
                 }
             }
 
-            // update duplicate
-            val duplicateHistories = histories.filter { it.duplicate }
-            repo.updateHistoryDuplicate(duplicateHistories)
+            val progress = Database.withTransaction {
+                // update duplicate
+                val duplicateHistories = histories.filter { it.duplicate }
+                repo.updateHistoryDuplicate(duplicateHistories)
 
-            // insert
-            val id = repo.insertHistory(history)
-            history.id = id.toInt()
+                // insert
+                val id = repo.insertHistory(history)
+                history.id = id.toInt()
+                histories.add(history)
 
-            // calculate read pages and update book progress
-            val read = histories.asSequence()
-                .filter { !it.duplicate && it.type is History.Process }
-                .map { it.end - it.start + 1 }
-                .sum()
-            val progress = (read * 1.0 / history.total * 100).toInt()
-            repo.updateBookProgress(history.bookId, progress)
+                // calculate read pages and update book progress
+                val read = histories.asSequence()
+                    .filter { !it.duplicate && it.type is History.Process }
+                    .map { it.end - it.start + 1 }
+                    .sum()
+                val progress = (read * 1.0 / history.total * 100).toInt()
+                repo.updateBookProgress(history.bookId, progress)
+
+                progress
+            }
 
             history to progress
         }
