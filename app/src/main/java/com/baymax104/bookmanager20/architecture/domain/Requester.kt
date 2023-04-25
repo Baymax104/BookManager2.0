@@ -1,6 +1,8 @@
 package com.baymax104.bookmanager20.architecture.domain
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 
 /**
  *@Description
@@ -27,6 +29,13 @@ open class Requester : ViewModel() {
                 result.isFailure -> result.onFailure(onFail)
             }
         }
+
+        suspend inline fun runCoroutine(crossinline action: suspend CoroutineScope.() -> T) =
+            coroutineScope {
+                runCatching {
+                    action()
+                }.let { invoke(it) }
+            }
     }
 
 }

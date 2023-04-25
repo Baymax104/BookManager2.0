@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.baymax104.bookmanager20.repository.local.Database
 import com.baymax104.bookmanager20.repository.local.LocalDatabase
+import com.blankj.utilcode.util.Utils
 
 /**
  *@Description
@@ -15,10 +16,14 @@ import com.baymax104.bookmanager20.repository.local.LocalDatabase
 class AppApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        // init database
         Database = Room.databaseBuilder(
             this,
             LocalDatabase::class.java,
             LocalDatabase.DatabaseName
         ).fallbackToDestructiveMigration().build()
+
+        // init utils
+        Utils.init(this)
     }
 }

@@ -23,11 +23,16 @@ android {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -81,9 +86,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
-    implementation 'com.github.permissions-dispatcher:permissionsdispatcher:4.8.0'
-    kapt 'com.github.permissions-dispatcher:permissionsdispatcher-processor:4.8.0'
-
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
@@ -105,9 +107,9 @@ dependencies {
     implementation 'com.github.li-xiaojun:XPopup:2.9.19'
     implementation 'com.github.li-xiaojun:XPopupExt:1.0.0'
 
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.1'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.7'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.7'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
 
     implementation 'top.zibin:Luban:1.1.8'
 
@@ -116,4 +118,6 @@ dependencies {
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
 
     implementation 'com.kunminx.arch:unpeek-livedata:7.8.0'
+
+    implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
 }

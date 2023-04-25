@@ -8,7 +8,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.activityViewModels
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.architecture.*
 import com.baymax104.bookmanager20.architecture.domain.*
 import com.baymax104.bookmanager20.architecture.view.BaseFragment
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
@@ -24,9 +23,6 @@ import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
-import kotlinx.coroutines.*
-import permissions.dispatcher.NeedsPermission
-import permissions.dispatcher.RuntimePermissions
 
 /**
  *@Description
@@ -35,7 +31,6 @@ import permissions.dispatcher.RuntimePermissions
  *@Date 2023/3/18 22:39
  *@Version 1
  */
-@RuntimePermissions
 class ProcessFragment : BaseFragment() {
 
     private val requester: ProcessRequester by activityViewModels()
@@ -64,27 +59,36 @@ class ProcessFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        messenger.photoUri.observeSend(viewLifecycleOwner) { takePhoto() }
+        with(messenger) {
 
-        messenger.requestBook.observeReply(viewLifecycleOwner) {
-            this@ProcessFragment showOnce BookInfoDialog(activity)
-        }
-
-        messenger.requestBook.observeSend(viewLifecycleOwner) { code ->
-            requester.requestBookInfo(code) {
-                success { reply(it) }
-                fail { ToastUtils.showShort(it.message) }
-            }
-        }
-
-        messenger.insertBook.observeSend(viewLifecycleOwner) { book ->
-            requester.insertProcessBook(book) {
-                success {
-                    states.books.add(it)
-                    ToastUtils.showShort("添加成功")
+            photoUri.observeSend(viewLifecycleOwner) {
+                requestPermission(Manifest.permission.CAMERA) {
+                    granted { takePhoto() }
+                    denied { ToastUtils.showShort("权限被拒绝，请到权限中心开启权限") }
                 }
-                fail { ToastUtils.showShort("添加失败：${it.message}") }
             }
+
+            requestBook.observeReply(viewLifecycleOwner) {
+                this@ProcessFragment showOnce BookInfoDialog(activity)
+            }
+
+            requestBook.observeSend(viewLifecycleOwner) { code ->
+                requester.requestBookInfo(code) {
+                    success { reply(it) }
+                    fail { ToastUtils.showShort(it.message) }
+                }
+            }
+
+            insertBook.observeSend(viewLifecycleOwner) { book ->
+                requester.insertProcessBook(book) {
+                    success {
+                        states.books.add(it)
+                        ToastUtils.showShort("添加成功")
+                    }
+                    fail { ToastUtils.showShort("添加失败：${it.message}") }
+                }
+            }
+
         }
 
         mainState.enterEdit.observe(viewLifecycleOwner) {
@@ -134,8 +138,7 @@ class ProcessFragment : BaseFragment() {
         }
     }
 
-    @NeedsPermission(Manifest.permission.CAMERA)
-    fun takePhoto() {
+    private fun takePhoto() {
         val file = ImageUtil.createFile()
         if (file == null) {
             ToastUtils.showShort("创建文件错误")

@@ -33,23 +33,23 @@ class ProcessRequester : Requester() {
 
     inline fun requestBookInfo(isbn: String, crossinline callback: Callback<Book>) =
         mainLaunch {
-            ResultCallback.build(callback)(runCatching {
+            ResultCallback.build(callback).runCoroutine {
                 val (code, message, data) = repo.requestBookInfo(isbn)
                 when (code) {
                     0 -> data
                     else -> throw Exception(message)
                 }
-            })
+            }
         }
 
     inline fun insertProcessBook(book: Book, crossinline callback: Callback<Book>) =
         mainLaunch {
-            ResultCallback.build(callback)(runCatching { repo.insertProcessBook(book) })
+            ResultCallback.build(callback).runCoroutine { repo.insertProcessBook(book) }
         }
 
     inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
         mainLaunch {
-            ResultCallback.build(callback)(runCatching { repo.queryAllProcessBook() })
+            ResultCallback.build(callback).runCoroutine { repo.queryAllProcessBook() }
         }
 
 }

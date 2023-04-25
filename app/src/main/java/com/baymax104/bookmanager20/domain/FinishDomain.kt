@@ -19,6 +19,6 @@ class FinishRequester : Requester() {
 
     inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
         mainLaunch {
-            ResultCallback.build(callback)(runCatching { repo.queryAllFinishBook() })
+            ResultCallback.build(callback).runCoroutine { repo.queryAllFinishBook() }
         }
 }

@@ -35,7 +35,9 @@ class HistoryRequester : Requester() {
         book: Book,
         crossinline callback: Callback<List<History>>
     ) = mainLaunch {
-        ResultCallback.build(callback)(runCatching { repo.queryBookHistory(book.id) })
+        ResultCallback.build(callback).runCoroutine {
+            repo.queryBookHistory(book.id)
+        }
     }
 
     inline fun insertHistory(
@@ -43,7 +45,7 @@ class HistoryRequester : Requester() {
         historyList: List<History>,
         crossinline callback: Callback<Pair<History, Int>>
     ) = mainLaunch {
-        val result = runCatching {
+        ResultCallback.build(callback).runCoroutine {
             // the new value must be behind the value whose start is equal to it
             val histories = historyList.asSequence()
                 .filter { !it.duplicate }
@@ -88,7 +90,7 @@ class HistoryRequester : Requester() {
                     .forEach { it.duplicate = true }
             }
 
-            // the new range isn't duplicate, shrink it's boundary
+            // the new range isn't duplicate, shrink its boundary
             if (!history.duplicate) {
                 // shrink start boundary
                 if (history.start <= previous.second.end) {
@@ -123,6 +125,18 @@ class HistoryRequester : Requester() {
 
             history to progress
         }
-        ResultCallback.build(callback)(result)
+    }
+
+    inline fun deleteHistory(
+        history: History,
+        historyList: List<History>,
+        crossinline callback: Callback<Pair<History, Int>>
+    ) = mainLaunch {
+        val result = runCatching {
+            val histories = historyList.asSequence()
+                .filter { !it.duplicate }
+                .sortedBy { it.start }
+                .toMutableList()
+        }
     }
 }
