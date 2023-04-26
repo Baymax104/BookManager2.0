@@ -1,7 +1,6 @@
 package com.baymax104.bookmanager20.domain
 
 import androidx.room.withTransaction
-import com.baymax104.bookmanager20.architecture.domain.EventState
 import com.baymax104.bookmanager20.architecture.domain.Messenger
 import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
@@ -22,9 +21,9 @@ import com.baymax104.bookmanager20.util.mainLaunch
 class HistoryMessenger : Messenger() {
 
     // 主页点击的Book
-    val book = EventState<Book, Book>()
+    val book = BiEvent<Book, Book>()
 
-    val updateHistory = EventState<Book, History>()
+    val updateHistory = BiEvent<Book, History>()
 }
 
 class HistoryRequester : Requester() {

@@ -17,12 +17,9 @@ data class DataBindingConfig(
 ) {
     val params: SparseArray<Any> = SparseArray()
 
-    fun add(vararg param: Pair<Int, Any>): DataBindingConfig {
-        for (p in param) {
-            if (params[p.first] == null) {
-                params.put(p.first, p.second)
-            }
+    fun add(vararg param: Pair<Int, Any>) = apply {
+        for ((id, p) in param) {
+            params[id] = params[id] ?: p
         }
-        return this
     }
 }

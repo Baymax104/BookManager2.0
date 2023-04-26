@@ -38,7 +38,7 @@ class UpdateDialog(context: Context) : CenterPopupView(context) {
         super.onCreate()
         bind(BR.state to states, BR.handler to Handler())
 
-        messenger.updateHistory.observeSendSticky(this) {
+        messenger.updateHistory.observeSend(this, sticky = true) {
             states.history.value = History(it)
         }
     }

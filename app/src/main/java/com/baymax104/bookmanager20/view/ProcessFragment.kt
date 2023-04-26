@@ -79,7 +79,7 @@ class ProcessFragment : BaseFragment() {
                 }
             }
 
-            insertBook.observeSend(viewLifecycleOwner) { book ->
+            insertBook.observeReply(viewLifecycleOwner) { book ->
                 requester.insertProcessBook(book) {
                     success {
                         states.books.add(it)

@@ -51,7 +51,7 @@ class ManualAddDialog(context: Context) : BottomPopupView(context) {
             if (book.page <= 1) {
                 ToastUtils.showShort("页数必须大于1")
             } else {
-                dismissWith { messenger.insertBook.send(book) }
+                dismissWith { messenger.insertBook.reply(book) }
             }
         }
 

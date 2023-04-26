@@ -1,6 +1,5 @@
 package com.baymax104.bookmanager20.domain
 
-import com.baymax104.bookmanager20.architecture.domain.EventState
 import com.baymax104.bookmanager20.architecture.domain.Messenger
 import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
@@ -18,7 +17,7 @@ import com.baymax104.bookmanager20.view.adapter.EditAdapter
  */
 class EditMessenger : Messenger() {
     // Edit页与主页共享的Book列表
-    val books = EventState<List<Book>, List<Book>>()
+    val books = BiEvent<List<Book>, List<Book>>()
 }
 
 class EditRequester : Requester() {

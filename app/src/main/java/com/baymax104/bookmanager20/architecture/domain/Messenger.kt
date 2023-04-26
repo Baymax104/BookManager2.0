@@ -3,7 +3,7 @@ package com.baymax104.bookmanager20.architecture.domain
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.baymax104.bookmanager20.util.Null
-import com.kunminx.architecture.ui.callback.UnPeekLiveData
+import com.jeremyliao.liveeventbus.core.LiveEventBusCore
 
 /**
  *@Description
@@ -13,60 +13,50 @@ import com.kunminx.architecture.ui.callback.UnPeekLiveData
  *@Version 1
  */
 
-open class Messenger : ViewModel()
+open class Messenger : ViewModel() {
 
-sealed class Event {
-    data class SendEvent<E>(val value: E) : Event()
-    data class ReplyEvent<E>(val value: E) : Event()
-}
+    protected val bus = LiveEventBusCore.get()!!
+    inline fun <reified T> LiveEventBusCore.with(key: String) = with(key, T::class.java)!!
 
-open class EventState<S, R> {
-    private val sender = UnPeekLiveData<Event.SendEvent<S>>()
-    private val replier = UnPeekLiveData<Event.ReplyEvent<R>>()
+    data class Event<E>(val value: E)
 
-    fun send(value: S) {
-        sender.value = Event.SendEvent(value)
+    open inner class BiEvent<S, R> {
+        @PublishedApi
+        internal val sender = bus.with<Event<S>>("bi-sender-${super.hashCode()}")
+
+        @PublishedApi
+        internal val replier = bus.with<Event<R>>("bi-replier-${super.hashCode()}")
+
+        fun send(value: S) = apply { sender.post(Event(value)) }
+        fun reply(value: R) = apply { replier.post(Event(value)) }
+
+        inline fun observeSend(
+            owner: LifecycleOwner,
+            sticky: Boolean = false,
+            crossinline action: BiEvent<S, R>.(S) -> Unit
+        ) {
+            if (sticky) {
+                sender.observeSticky(owner) { action(it!!.value) }
+            } else {
+                sender.observe(owner) { action(it!!.value) }
+            }
+        }
+
+        inline fun observeReply(
+            owner: LifecycleOwner,
+            sticky: Boolean = false,
+            crossinline action: BiEvent<S, R>.(R) -> Unit
+        ) {
+            if (sticky) {
+                replier.observeSticky(owner) { action(it!!.value) }
+            } else {
+                replier.observe(owner) { action(it!!.value) }
+            }
+        }
     }
 
-    fun reply(value: R) {
-        replier.value = Event.ReplyEvent(value)
+    inner class UniEvent<R> : BiEvent<Null, R>() {
+        fun send() = super.send(null)
     }
 
-    fun observeSend(owner: LifecycleOwner, action: EventState<S, R>.(S) -> Unit) {
-        sender.observe(owner) { action(it.value) }
-    }
-
-    fun observeReply(owner: LifecycleOwner, action: EventState<S, R>.(R) -> Unit) {
-        replier.observe(owner) { action(it.value) }
-    }
-
-    fun observeSendSticky(owner: LifecycleOwner, action: EventState<S, R>.(S) -> Unit) {
-        sender.observeSticky(owner) { action(it.value) }
-    }
-
-    fun observeReplySticky(owner: LifecycleOwner, action: EventState<S, R>.(R) -> Unit) {
-        replier.observeSticky(owner) { action(it.value) }
-    }
-}
-
-class Sender<S> : EventState<S, Null>() {
-    fun reply() {
-        super.reply(null)
-    }
-}
-
-class Replier<R> : EventState<Null, R>() {
-    fun send() {
-        super.send(null)
-    }
-}
-
-class Notifier : EventState<Null, Null>() {
-    fun send() {
-        super.send(null)
-    }
-
-    fun reply() {
-        super.reply(null)
-    }
 }

@@ -40,7 +40,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
         super.onCreate()
         bind(BR.state to states, BR.handler to Handler())
 
-        messenger.requestBook.observeReplySticky(this) { states.book.value = it }
+        messenger.requestBook.observeReply(this, sticky = true) { states.book.value = it }
 
         messenger.modifyBook.observeSend(this) { activity showOnce ModifyInfoDialog(activity) }
 
@@ -62,7 +62,7 @@ class BookInfoDialog(context: Context) : BottomPopupView(context) {
                         val file = ImageUtil.download(activity, it)
                         file?.absolutePath ?: it
                     }
-                    messenger.insertBook.send(book)
+                    messenger.insertBook.reply(book)
                 }
             }
         }

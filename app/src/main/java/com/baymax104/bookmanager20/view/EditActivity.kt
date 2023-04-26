@@ -44,7 +44,7 @@ class EditActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        messenger.books.observeSendSticky(this) {
+        messenger.books.observeSend(this, sticky = true) {
             states.books.value = it.lightClone()
         }
 

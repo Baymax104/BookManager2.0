@@ -44,7 +44,7 @@ class HistoryActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        messenger.book.observeSendSticky(this) { book ->
+        messenger.book.observeSend(this, sticky = true) { book ->
             states.book.value = book.clone()
             requester.queryBookHistory(states.book.value) {
                 success { states.histories.value = it }
