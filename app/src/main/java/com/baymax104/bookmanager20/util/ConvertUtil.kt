@@ -19,6 +19,12 @@ val DateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
 
 val DateDetailFormatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA)
 
+fun Date?.toDateString(detail: Boolean = false) =
+    this?.let {
+        val formatter = if (detail) DateDetailFormatter else DateFormatter
+        formatter.format(this)
+    } ?: ""
+
 object PageDeserializer : JsonDeserializer<Int>() {
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): Int {
         if (p == null) return 0
@@ -34,8 +40,7 @@ object PageDeserializer : JsonDeserializer<Int>() {
 class RoomConverter {
 
     @TypeConverter
-    fun convertDateToString(date: Date?): String? =
-        date?.let { DateFormatter.format(it) }
+    fun convertDateToString(date: Date?): String = date.toDateString()
 
     @TypeConverter
     fun convertStringToDate(dateString: String?): Date? =

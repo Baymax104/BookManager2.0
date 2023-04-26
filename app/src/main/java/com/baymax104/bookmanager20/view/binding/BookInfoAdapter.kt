@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.util.DateFormatter
+import com.baymax104.bookmanager20.util.toDateString
 import java.util.*
 
 /**
@@ -20,8 +20,8 @@ object BookInfoAdapter {
     @JvmStatic
     @BindingAdapter("book_finish_time")
     fun TextView.finishTime(book: Book) {
-        val start = book.startTime?.let { DateFormatter.format(it) }
-        val end = book.endTime?.let { DateFormatter.format(it) }
+        val start = book.startTime.toDateString()
+        val end = book.endTime.toDateString()
         text = "$start——$end"
     }
 

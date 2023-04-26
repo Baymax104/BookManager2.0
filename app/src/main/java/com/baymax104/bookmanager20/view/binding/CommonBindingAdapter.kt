@@ -6,7 +6,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.baymax104.bookmanager20.R
-import com.baymax104.bookmanager20.util.DateFormatter
+import com.baymax104.bookmanager20.util.toDateString
 import com.baymax104.bookmanager20.view.adapter.BaseAdapter
 import com.blankj.utilcode.util.ConvertUtils
 import com.bumptech.glide.Glide
@@ -73,7 +73,7 @@ object CommonBindingAdapter {
     @JvmStatic
     @BindingAdapter("text_date")
     fun TextView.textDate(date: Date?) {
-        text = date?.let { DateFormatter.format(it) }
+        text = date.toDateString()
     }
 
 }

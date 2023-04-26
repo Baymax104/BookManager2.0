@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.entity.History
-import com.baymax104.bookmanager20.util.DateFormatter
+import com.baymax104.bookmanager20.util.toDateString
 import java.util.*
 
 /**
@@ -30,16 +30,16 @@ object HistoryInfoAdapter {
     @JvmStatic
     @BindingAdapter("history_time")
     fun TextView.historyTime(date: Date?) {
-        val d = date?.let { DateFormatter.format(it) }
-        text = "更新时间：$d"
+        text = "更新时间：${date.toDateString()}"
     }
 
     @JvmStatic
     @BindingAdapter("history_time_dot")
     fun ImageView.historyTimeDot(history: History) {
-        when (history.type) {
-            is History.Start -> R.drawable.time_dot_start
-            is History.Process -> R.drawable.time_dot
+        when {
+            history.duplicate -> R.drawable.time_dot_duplicate
+            history.type is History.Start -> R.drawable.time_dot_start
+            else -> R.drawable.time_dot
         }.let { setImageResource(it) }
     }
 

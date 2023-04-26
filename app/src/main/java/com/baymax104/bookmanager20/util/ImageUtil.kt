@@ -23,7 +23,7 @@ import java.util.*
 object ImageUtil {
 
     fun createFile(): File? {
-        val filename = "${DateDetailFormatter.format(Date())}.jpg"
+        val filename = "${Date().toDateString(detail = true)}.jpg"
         val parent = PathUtils.getExternalAppFilesPath()
         if (parent == "") {
             return null
@@ -34,7 +34,7 @@ object ImageUtil {
     }
 
     fun createCacheFile(): File? {
-        val filename = "${DateDetailFormatter.format(Date())}.jpg"
+        val filename = "${Date().toDateString(detail = true)}.jpg"
         val parent = PathUtils.getExternalAppCachePath()
         if (parent == "") {
             return null
@@ -50,7 +50,7 @@ object ImageUtil {
             .load(path)
             .setTargetDir(parent)
             .ignoreBy(80)
-            .setRenameListener { "${DateDetailFormatter.format(Date())}.jpg" }
+            .setRenameListener { "${Date().toDateString(detail = true)}.jpg" }
             .setCompressListener(object : OnCompressListener {
                 override fun onStart() {}
 
@@ -75,7 +75,7 @@ object ImageUtil {
             .load(url)
             .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
             .get()
-        val filename = "${DateDetailFormatter.format(Date())}.jpg"
+        val filename = "${Date().toDateString(detail = true)}.jpg"
         val dest = File(PathUtils.getExternalAppFilesPath(), filename)
 
         if (FileUtils.copy(source, dest)) dest else null
