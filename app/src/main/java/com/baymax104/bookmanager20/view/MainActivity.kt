@@ -67,6 +67,7 @@ class MainActivity : BaseActivity() {
         immersive(binding.toolbar, true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.leftNav.itemIconTintList = null
+        binding.viewPager.offscreenPageLimit = 2
     }
 
     override fun createToolbarMenu(): Int = R.menu.toolbar

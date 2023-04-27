@@ -104,11 +104,16 @@ class ProcessFragment : BaseFragment() {
         }
 
         historyMessenger.book.observeReply(viewLifecycleOwner) { book ->
-            val find = states.books.value.find { it.id == book.id }
-            if (find == null) {
+            val item = states.books.value.find { it.id == book.id }
+            if (item == null) {
                 ToastUtils.showShort("更新信息错误")
+                return@observeReply
+            }
+            if (book.progress >= 100) {
+                // TODO 通知Finish页添加
+                states.books.remove(item)  // 图书已完成，删除该项
             } else {
-                find.progress = book.progress
+                item.progress = book.progress
             }
         }
 

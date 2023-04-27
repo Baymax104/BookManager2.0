@@ -73,8 +73,8 @@ object MainRepository {
         if (i != books.size) throw Exception("更新顺序错误")
     }
 
-    suspend fun updateBookProgress(bookId: Int, progress: Int): Unit = Database.withTransaction {
-        val i = bookDao.updateBookProgress(bookId, progress)
+    suspend fun updateBookProgress(bookId: Int, progress: Int, endTime: Date?): Unit = Database.withTransaction {
+        val i = bookDao.updateBookProgress(bookId, progress, endTime)
         if (i != 1) throw Exception("更新进度错误")
     }
 

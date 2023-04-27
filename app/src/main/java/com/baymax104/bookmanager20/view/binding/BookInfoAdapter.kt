@@ -27,8 +27,8 @@ object BookInfoAdapter {
 
     @JvmStatic
     @BindingAdapter("book_type")
-    fun ImageView.bookType(book: Book) {
-        val resource = if (book.progress >= 100) R.drawable.restart else R.drawable.update
+    fun ImageView.bookType(progress: Int) {
+        val resource = if (progress >= 100) R.drawable.restart else R.drawable.update
         setImageResource(resource)
     }
 

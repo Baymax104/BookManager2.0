@@ -5,7 +5,7 @@ import androidx.databinding.Bindable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
-import com.baymax104.bookmanager20.util.LightClone
+import com.baymax104.bookmanager20.util.Clone
 import com.baymax104.bookmanager20.util.PageDeserializer
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -23,7 +23,7 @@ import java.util.*
  */
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Book(builder: Builder) : BaseObservable(), LightClone<Book> {
+class Book(builder: Builder) : BaseObservable(), Clone<Book> {
 
     @JsonIgnore
     @PrimaryKey(autoGenerate = true)

@@ -24,6 +24,7 @@ object HistoryInfoAdapter {
         text = when (type) {
             is History.Start -> "开始阅读"
             is History.Process -> "读完第${type.start}~${type.end}页"
+            is History.Duplicate -> "读完第${type.start}~${type.end}页"
         }
     }
 
@@ -35,11 +36,11 @@ object HistoryInfoAdapter {
 
     @JvmStatic
     @BindingAdapter("history_time_dot")
-    fun ImageView.historyTimeDot(history: History) {
-        when {
-            history.duplicate -> R.drawable.time_dot_duplicate
-            history.type is History.Start -> R.drawable.time_dot_start
-            else -> R.drawable.time_dot
+    fun ImageView.historyTimeDot(type: History.Type) {
+        when(type) {
+            is History.Duplicate -> R.drawable.time_dot_duplicate
+            is History.Start -> R.drawable.time_dot_start
+            is History.Process -> R.drawable.time_dot
         }.let { setImageResource(it) }
     }
 

@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
-import com.baymax104.bookmanager20.util.LightClone
+import com.baymax104.bookmanager20.util.Clone
 import java.util.*
 
 /**
@@ -17,7 +17,7 @@ import java.util.*
  *@Version 1
  */
 @Entity
-class History(book: Book) : BaseObservable(), LightClone<History> {
+class History(book: Book) : BaseObservable(), Clone<History> {
 
     @PrimaryKey(autoGenerate = true)
     var id = 0
@@ -50,12 +50,17 @@ class History(book: Book) : BaseObservable(), LightClone<History> {
         }
 
     var duplicate = false
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.type)
+        }
 
     @get:Ignore
     @get:Bindable
     val type: Type
         get() = when {
             start == 0 && end == 0 -> Start
+            duplicate -> Duplicate(start, end, total)
             else -> Process(start, end, total)
         }
 
@@ -63,11 +68,8 @@ class History(book: Book) : BaseObservable(), LightClone<History> {
 
     sealed class Type
     object Start : Type()
-    data class Process(
-        var start: Int,
-        val end: Int,
-        val total: Int
-    ) : Type()
+    data class Process(var start: Int, val end: Int, val total: Int) : Type()
+    data class Duplicate(var start: Int, val end: Int, val total: Int) : Type()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -104,6 +106,7 @@ class History(book: Book) : BaseObservable(), LightClone<History> {
             start = this@History.start
             end = this@History.end
             total = this@History.total
+            duplicate = this@History.duplicate
         }
     }
 

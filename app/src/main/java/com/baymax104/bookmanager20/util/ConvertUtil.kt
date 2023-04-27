@@ -40,21 +40,20 @@ object PageDeserializer : JsonDeserializer<Int>() {
 class RoomConverter {
 
     @TypeConverter
-    fun convertDateToString(date: Date?): String = date.toDateString()
+    fun convertDateToString(date: Date?): String? =
+        date?.let { DateFormatter.format(it) }
 
     @TypeConverter
     fun convertStringToDate(dateString: String?): Date? =
         dateString?.let { DateFormatter.parse(it) }
 }
 
-interface LightClone<T> {
+interface Clone<T> {
     fun clone(): T
 }
 
-fun <T : LightClone<T>> List<T>.lightClone(): List<T> {
+fun <T : Clone<T>> List<T>.deepClone(): MutableList<T> {
     val copyList = mutableListOf<T>()
-    forEach {
-        copyList.add(it.clone())
-    }
+    forEach { copyList.add(it.clone()) }
     return copyList
 }

@@ -26,7 +26,7 @@
                     android:layout_width="18dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    history_time_dot="@{history}"/>
+                    history_time_dot="@{history.type}"/>
 
             <TextView
                     android:layout_width="match_parent"

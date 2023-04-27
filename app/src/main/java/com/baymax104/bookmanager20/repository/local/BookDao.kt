@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.baymax104.bookmanager20.entity.Book
+import java.util.Date
 
 /**
  *@Description
@@ -31,6 +32,6 @@ interface BookDao {
     @Update
     suspend fun updateBookRank(books: List<Book>): Int
 
-    @Query("update Book set progress = :progress where id = :bookId")
-    suspend fun updateBookProgress(bookId: Int, progress: Int): Int
+    @Query("update Book set progress = :progress, endTime = :endTime where id = :bookId")
+    suspend fun updateBookProgress(bookId: Int, progress: Int, endTime: Date?): Int
 }

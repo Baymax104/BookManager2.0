@@ -54,8 +54,8 @@ class HistoryActivity : BaseActivity() {
 
         messenger.updateHistory.observeReply(this) { history ->
             requester.insertHistory(history, states.histories.value) {
-                success { (history, progress) ->
-                    states.book.value.progress = progress
+                success {
+                    states.book.value.progress = it
                     states.histories.add(history)
                 }
                 fail { ToastUtils.showShort(it.message) }
