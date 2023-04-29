@@ -2,11 +2,13 @@ package com.baymax104.bookmanager20.entity
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
-import com.baymax104.bookmanager20.util.Clone
+import com.baymax104.bookmanager20.architecture.interfaces.Clone
+import com.baymax104.bookmanager20.architecture.interfaces.ObjectRange
 import java.util.*
 
 /**
@@ -17,7 +19,9 @@ import java.util.*
  *@Version 1
  */
 @Entity
-class History(book: Book) : BaseObservable(), Clone<History> {
+class History(
+    book: Book
+) : BaseObservable(), Clone<History>, ObjectRange<Int> {
 
     @PrimaryKey(autoGenerate = true)
     var id = 0
@@ -31,15 +35,19 @@ class History(book: Book) : BaseObservable(), Clone<History> {
             notifyPropertyChanged(BR.updateTime)
         }
 
-    var start = 0
+    @Ignore
+    override var start = 0
         set(value) {
             field = value
+            startDB = value
             notifyPropertyChanged(BR.type)
         }
 
-    var end = 0
+    @Ignore
+    override var end = 0
         set(value) {
             field = value
+            endDB = value
             notifyPropertyChanged(BR.type)
         }
 
@@ -63,6 +71,12 @@ class History(book: Book) : BaseObservable(), Clone<History> {
             duplicate -> Duplicate(start, end, total)
             else -> Process(start, end, total)
         }
+
+    @ColumnInfo(name = "start")
+    var startDB = start
+
+    @ColumnInfo(name = "end")
+    var endDB = end
 
     constructor() : this(Book())
 

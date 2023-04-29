@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.baymax104.bookmanager20.architecture.domain.Requester
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  *@Description
@@ -18,3 +20,4 @@ typealias MLD<T> = MediatorLiveData<T>
 
 typealias Callback<T> = Requester.ResultCallback<T>.() -> Unit
 typealias Null = Nothing?
+typealias TreeMap<T> = HashMap<TreeNode<T>, LinkedList<Node<T>>>

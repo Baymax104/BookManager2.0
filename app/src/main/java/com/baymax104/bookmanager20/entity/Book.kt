@@ -5,7 +5,7 @@ import androidx.databinding.Bindable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
-import com.baymax104.bookmanager20.util.Clone
+import com.baymax104.bookmanager20.architecture.interfaces.Clone
 import com.baymax104.bookmanager20.util.PageDeserializer
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonCreator

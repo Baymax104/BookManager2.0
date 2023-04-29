@@ -13,7 +13,7 @@ import com.baymax104.bookmanager20.databinding.ActivityEditBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.EditRequester
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.util.deepClone
+import com.baymax104.bookmanager20.architecture.interfaces.deepClone
 import com.baymax104.bookmanager20.util.showSnackBar
 import com.baymax104.bookmanager20.view.adapter.EditAdapter
 import com.blankj.utilcode.util.ToastUtils

@@ -47,13 +47,3 @@ class RoomConverter {
     fun convertStringToDate(dateString: String?): Date? =
         dateString?.let { DateFormatter.parse(it) }
 }
-
-interface Clone<T> {
-    fun clone(): T
-}
-
-fun <T : Clone<T>> List<T>.deepClone(): MutableList<T> {
-    val copyList = mutableListOf<T>()
-    forEach { copyList.add(it.clone()) }
-    return copyList
-}

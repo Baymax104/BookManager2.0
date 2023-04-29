@@ -3,12 +3,13 @@ package com.baymax104.bookmanager20.domain
 import androidx.room.withTransaction
 import com.baymax104.bookmanager20.architecture.domain.Messenger
 import com.baymax104.bookmanager20.architecture.domain.Requester
+import com.baymax104.bookmanager20.architecture.interfaces.deepClone
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.entity.History
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.repository.local.Database
 import com.baymax104.bookmanager20.util.Callback
-import com.baymax104.bookmanager20.util.deepClone
+import com.baymax104.bookmanager20.util.IntervalTree
 import com.baymax104.bookmanager20.util.mainLaunch
 import java.util.Date
 
@@ -33,12 +34,21 @@ class HistoryRequester : Requester() {
 
     val repo = MainRepository
 
+    val historyTree = IntervalTree<Int, History>(
+        { it + 1 },
+        { it - 1 },
+        { left, right -> left + 1 == right }
+    )
+
     inline fun queryBookHistory(
         book: Book,
         crossinline callback: Callback<List<History>>
     ) = mainLaunch {
         ResultCallback.build(callback).runCoroutine {
-            repo.queryBookHistory(book.id)
+            repo.queryBookHistory(book.id).also {
+                // clear tree
+                historyTree.create(it)
+            }
         }
     }
 
@@ -113,20 +123,6 @@ class HistoryRequester : Requester() {
         }
     }
 
-    fun calculateProgress(history: History, historyList: List<History>): Int {
-        val historyCopy = history.clone()
-        val histories = historyList.deepClone()
-        preprocessing(historyCopy, histories)
-
-        // calculate progress
-        return histories.apply { add(historyCopy) }
-            .asSequence()
-            .filter { it.type is History.Process }
-            .map { it.end - it.start + 1 }
-            .sum()
-            .let { (it * 1.0 / historyCopy.total * 100).toInt() }
-    }
-
     inline fun insertHistory(
         history: History,
         historyList: List<History>,
@@ -191,6 +187,30 @@ class HistoryRequester : Requester() {
                 .toMutableList()
 
             val index = histories.indexOf(history)
+            // find previous
+            var previous: Pair<Int, History>? = null
+            for (i in index - 1 downTo 0) {
+                if (!histories[i].duplicate) {
+                    previous = Pair(i, histories[i])
+                }
+            }
+            previous!!  // previous must exist
+            var next: Pair<Int, History>? = null
+            for (i in index + 1 until histories.size) {
+                if (!histories[i].duplicate) {
+                    next = Pair(i, histories[i])
+                }
+            }
+
+            0
+        }
+    }
+
+    inline fun insert(
+        history: History,
+        crossinline callback: Callback<Int>
+    ) = mainLaunch {
+        ResultCallback.build(callback).runCoroutine {
             0
         }
     }
