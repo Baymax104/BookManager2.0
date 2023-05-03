@@ -2,6 +2,7 @@ package com.baymax104.bookmanager20.util
 
 import com.baymax104.bookmanager20.architecture.interfaces.ObjectRange
 import java.util.*
+import kotlin.collections.HashSet
 
 /**
  *@Description
@@ -88,16 +89,16 @@ interface IntervalCallback<R : Comparable<R>> {
     fun adjoin(left: R, right: R): Boolean
 }
 
-class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
+open class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
     val callback: IntervalCallback<R>
 ) {
 
     private val root: Root<T> = Root()
 
-    val first: List<T>
+    val firstSet: HashSet<T>
         get() = root.children.asSequence()
             .map { it.value }
-            .toList()
+            .toHashSet()
 
     // map parent node to its overlap child
     private val overlapMap: TreeMap<T> = HashMap()
@@ -193,16 +194,6 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
         duplicateMap -= node.hash
     }
 
-    fun checkInFirst(value: T): Boolean {
-        val node = Node(value)
-        for (child in root) {
-            if (node.value equal child.value && node.value === child.value) {
-                return true
-            }
-        }
-        return false
-    }
-
     fun clear() {
         val current: TreeNode<T> = root
         val queue: Queue<TreeNode<T>> = LinkedList()
@@ -213,18 +204,6 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
             node.children.clear()
         }
     }
-
-    fun overlapValues() =
-        overlapMap.asSequence()
-            .flatMap { it.value }
-            .map { it.value }
-            .toList()
-
-    fun duplicateValues() =
-        duplicateMap.asSequence()
-            .flatMap { it.value }
-            .map { it.value }
-            .toList()
 
     private fun assertNodeExistInTree(value: T, node: TreeNode<T>): Boolean {
         // node does not exist in tree, may exist in overlap map

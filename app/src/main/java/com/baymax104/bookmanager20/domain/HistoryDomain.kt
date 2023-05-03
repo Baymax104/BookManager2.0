@@ -10,6 +10,7 @@ import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.repository.local.Database
 import com.baymax104.bookmanager20.util.*
 import java.util.*
+import kotlin.collections.HashSet
 
 
 /**
@@ -40,25 +41,19 @@ class HistoryRequester : Requester() {
         union: HistoryUnion,
         callback: Callback<Int>
     ) = mainLaunchCallback(callback) {
-        union.tree += history
-        val duplicated = union.historyValue.asSequence()
-            .onEach { it.duplicate = !union.tree.checkInFirst(it) }
-            .filter { it.duplicate }
-            .toList()
-        history.duplicate = !union.tree.checkInFirst(history)
+        union += history
+        history.duplicate = history !in union.uniqueSet
+        val duplicateList = union.duplicateList
         val progress = union.progress
         val endTime = if (progress >= 100) Date() else null
 
-        // database operation
         Database.withTransaction {
             try {
-                repo.updateHistoryDuplicate(duplicated)
+                repo.updateHistoryDuplicate(duplicateList)
                 repo.insertHistory(history)
                 repo.updateBookProgress(history.bookId, progress, endTime)
             } catch (e: Exception) {
-                // rollback
-                union.tree -= history
-                union.historyValue.forEach { it.duplicate = !union.tree.checkInFirst(it) }
+                union -= history  // rollback
                 throw e
             }
         }
@@ -77,39 +72,53 @@ class HistoryRequester : Requester() {
 
 class HistoryUnion(list: List<History>) {
 
-    private val callback = object : IntervalCallback<Int> {
+    class HistoryTree() : IntervalTree<Int, History>(object : IntervalCallback<Int> {
         override fun shrinkLeft(leftEnd: Int) = leftEnd + 1
         override fun shrinkRight(rightStart: Int) = rightStart - 1
         override fun adjoin(left: Int, right: Int) = left + 1 == right
+    }) {
+        constructor(histories: List<History>) : this() {
+            histories.takeIf { it.isNotEmpty() }
+                ?.filter { it.type !is History.Start }
+                ?.let { create(it) }
+        }
     }
 
-    val historyState = State(list)
+    private var tree = HistoryTree(list)
 
-    var tree: IntervalTree<Int, History> = IntervalTree(callback)
+    val state = State(list)
 
-    var historyValue: List<History>
-        get() = historyState.value
+    var list: List<History>
+        get() = state.value
         set(value) {
-            historyState.value = value
-            tree = IntervalTree(callback)
-            value.takeIf { it.isNotEmpty() }
-                ?.filter { it.type !is History.Start }
-                ?.let { tree.create(it) }
+            state.value = value
+            tree = HistoryTree(value)
         }
 
-    val progress
-        get() = tree.first.asSequence()
+    val progress: Int
+        get() = tree.firstSet.asSequence()
             .map { it.end - it.start + 1 }
             .sum()
             .let {
-                val total = if (historyValue.isNotEmpty()) historyValue.first().total else 0
-                if (total <= 0) {
-                    0
-                } else {
-                    tree.first.asSequence()
-                        .map { it.end - it.start + 1 }
-                        .sum()
-                        .let { (it * 1.0 / total * 100).toInt() }
-                }
+                val total = if (list.isNotEmpty()) list.first().total else 0
+                if (total > 0) (it * 1.0 / total * 100).toInt() else 0
             }
+
+    val duplicateList: List<History>
+        get() = list.filter { it.duplicate }
+
+    val uniqueSet: HashSet<History>
+        get() = tree.firstSet
+
+    operator fun plusAssign(history: History) {
+        tree += history
+        refreshDuplicate()
+    }
+
+    operator fun minusAssign(history: History) {
+        tree -= history
+        refreshDuplicate()
+    }
+
+    private fun refreshDuplicate() = list.forEach { it.duplicate = it !in uniqueSet }
 }

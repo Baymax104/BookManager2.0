@@ -47,7 +47,7 @@ class HistoryActivity : BaseActivity() {
         messenger.book.observeSend(this, sticky = true) { book ->
             states.book.value = book.clone()
             requester.queryBookHistory(states.book.value) {
-                success { states.union.historyValue = it }
+                success { states.union.list = it }
                 fail { ToastUtils.showShort(it.message) }
             }
         }
@@ -56,7 +56,7 @@ class HistoryActivity : BaseActivity() {
             requester.insertHistory(history, states.union) {
                 success {
                     states.book.value.progress = it
-                    states.union.historyState += history
+                    states.union.state += history
                 }
                 fail { ToastUtils.showShort(it.message) }
             }

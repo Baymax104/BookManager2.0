@@ -127,7 +127,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="vertical"
                 android:adapter="@{adapter}"
-                recycler_data="@{state.union.historyState}"/>
+                recycler_data="@{state.union.state}"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
