@@ -1,5 +1,6 @@
 package com.baymax104.bookmanager20.repository
 
+import android.database.sqlite.SQLiteException
 import androidx.room.withTransaction
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.entity.History
@@ -45,12 +46,10 @@ object MainRepository {
     suspend fun insertProcessBook(book: Book) = Database.withTransaction {
         // set book
         book.startTime = Date()
-        val all = bookDao.queryAllProcess()
-        book.tableRank = all.size
+        bookDao.queryAllProcess().let { book.tableRank = it.size }
 
         // insert book
-        val id = bookDao.insertProcess(book)
-        book.id = id.toInt()
+        bookDao.insertProcess(book).let { book.id = it.toInt() }
 
         // insert initial history
         val history = History(book)
@@ -61,26 +60,27 @@ object MainRepository {
     }
 
     suspend fun insertHistory(history: History) = Database.withTransaction {
-        historyDao.insertHistory(history)
+        historyDao.insertHistory(history).let { history.id = it.toInt() }
     }
 
     suspend fun updateHistoryDuplicate(histories: List<History>) = Database.withTransaction {
-        historyDao.updateHistoryDuplicate(histories)
+        val i = historyDao.updateHistoryDuplicate(histories)
+        if (i != histories.size) throw SQLiteException("更新duplicate错误")
     }
 
     suspend fun updateBookRank(books: List<Book>): Unit = Database.withTransaction {
         val i = bookDao.updateBookRank(books)
-        if (i != books.size) throw Exception("更新顺序错误")
+        if (i != books.size) throw SQLiteException("更新顺序错误")
     }
 
     suspend fun updateBookProgress(bookId: Int, progress: Int, endTime: Date?): Unit = Database.withTransaction {
         val i = bookDao.updateBookProgress(bookId, progress, endTime)
-        if (i != 1) throw Exception("更新进度错误")
+        if (i != 1) throw SQLiteException("更新进度错误")
     }
 
     suspend fun deleteBooks(bookIds: List<Int>): Unit = Database.withTransaction {
         val i = bookDao.deleteBooks(bookIds)
-        if (i != bookIds.size) throw Exception("删除图书错误")
+        if (i != bookIds.size) throw SQLiteException("删除图书错误")
         historyDao.deleteBooksHistories(bookIds)
     }
 }

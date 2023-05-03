@@ -5,7 +5,7 @@ import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.Callback
-import com.baymax104.bookmanager20.util.mainLaunch
+import com.baymax104.bookmanager20.util.mainLaunchCallback
 
 /**
  *@Description
@@ -30,27 +30,21 @@ class ProcessMessenger : Messenger() {
 
 class ProcessRequester : Requester() {
 
-    val repo = MainRepository
+    private val repo = MainRepository
 
-    inline fun requestBookInfo(isbn: String, crossinline callback: Callback<Book>) =
-        mainLaunch {
-            ResultCallback.build(callback).runCoroutine {
-                val (code, message, data) = repo.requestBookInfo(isbn)
-                when (code) {
-                    0 -> data
-                    else -> throw Exception(message)
-                }
+    fun requestBookInfo(isbn: String, callback: Callback<Book>) =
+        mainLaunchCallback(callback) {
+            val (code, message, data) = repo.requestBookInfo(isbn)
+            when (code) {
+                0 -> data
+                else -> throw Exception(message)
             }
         }
 
-    inline fun insertProcessBook(book: Book, crossinline callback: Callback<Book>) =
-        mainLaunch {
-            ResultCallback.build(callback).runCoroutine { repo.insertProcessBook(book) }
-        }
+    fun insertProcessBook(book: Book, callback: Callback<Book>) =
+        mainLaunchCallback(callback) { repo.insertProcessBook(book) }
 
-    inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
-        mainLaunch {
-            ResultCallback.build(callback).runCoroutine { repo.queryAllProcessBook() }
-        }
+    fun queryAllBook(callback: Callback<List<Book>>) =
+        mainLaunchCallback(callback) { repo.queryAllProcessBook() }
 
 }

@@ -4,7 +4,7 @@ import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.Callback
-import com.baymax104.bookmanager20.util.mainLaunch
+import com.baymax104.bookmanager20.util.mainLaunchCallback
 
 /**
  *@Description
@@ -15,10 +15,8 @@ import com.baymax104.bookmanager20.util.mainLaunch
  */
 class FinishRequester : Requester() {
 
-    val repo = MainRepository
+    private val repo = MainRepository
 
-    inline fun queryAllBook(crossinline callback: Callback<List<Book>>) =
-        mainLaunch {
-            ResultCallback.build(callback).runCoroutine { repo.queryAllFinishBook() }
-        }
+    fun queryAllBook(callback: Callback<List<Book>>) =
+        mainLaunchCallback(callback) { repo.queryAllFinishBook() }
 }

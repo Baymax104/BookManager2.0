@@ -82,7 +82,7 @@ class ProcessFragment : BaseFragment() {
             insertBook.observeReply(viewLifecycleOwner) { book ->
                 requester.insertProcessBook(book) {
                     success {
-                        states.books.add(it)
+                        states.books += it
                         ToastUtils.showShort("添加成功")
                     }
                     fail { ToastUtils.showShort("添加失败：${it.message}") }

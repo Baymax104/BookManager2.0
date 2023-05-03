@@ -5,7 +5,7 @@ import com.baymax104.bookmanager20.architecture.domain.Requester
 import com.baymax104.bookmanager20.entity.Book
 import com.baymax104.bookmanager20.repository.MainRepository
 import com.baymax104.bookmanager20.util.Callback
-import com.baymax104.bookmanager20.util.mainLaunch
+import com.baymax104.bookmanager20.util.mainLaunchCallback
 import com.baymax104.bookmanager20.view.adapter.EditAdapter
 
 /**
@@ -24,24 +24,17 @@ class EditRequester : Requester() {
 
     val repo = MainRepository
 
-    inline fun deleteBooks(
-        removedItems: List<EditAdapter.RemovedItem>,
-        crossinline callback: Callback<Unit>
-    ) = mainLaunch {
-        ResultCallback.build(callback).runCoroutine {
+    fun deleteBooks(removedItems: List<EditAdapter.RemovedItem>, callback: Callback<Unit>) =
+        mainLaunchCallback(callback) {
             // there are items removed
             if (removedItems.isNotEmpty()) {
                 val ids = removedItems.map { it.value.id }
                 repo.deleteBooks(ids)
             }
         }
-    }
 
-    inline fun updateBookRank(
-        books: List<Book>,
-        crossinline callback: Callback<Unit>
-    ) = mainLaunch {
-        ResultCallback.build(callback).runCoroutine {
+    fun updateBookRank(books: List<Book>, callback: Callback<Unit>) =
+        mainLaunchCallback(callback) {
             // check if list has been swapped
             var hasSwapped = false
             for ((i, book) in books.withIndex()) {
@@ -54,5 +47,4 @@ class EditRequester : Requester() {
                 repo.updateBookRank(books)
             }
         }
-    }
 }

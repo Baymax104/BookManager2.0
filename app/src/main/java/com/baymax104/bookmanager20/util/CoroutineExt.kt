@@ -1,5 +1,6 @@
 package com.baymax104.bookmanager20.util
 
+import com.baymax104.bookmanager20.architecture.domain.Requester
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
@@ -23,4 +24,13 @@ fun mainLaunch(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
 ) = MainScope.launch(context, start, block)
+
+fun <T> mainLaunchCallback(
+    callback: Callback<T>,
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> T
+) = mainLaunch(context, start) {
+    Requester.ResultCallback.build(callback).runCoroutine(block)
+}
 

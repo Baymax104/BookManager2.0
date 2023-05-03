@@ -25,6 +25,8 @@ fun <E> State<out List<E>>.add(element: E) {
     value = list
 }
 
+operator fun <E> State<out List<E>>.plusAssign(value: E) = add(value)
+
 fun <E> State<out List<E>>.add(i: Int, element: E) {
     val list = value
     list as MutableList<E>
@@ -38,6 +40,8 @@ fun <E> State<out List<E>>.remove(element: E) {
     list.remove(element)
     value = list
 }
+
+operator fun <E> State<out List<E>>.minusAssign(element: E) = remove(element)
 
 fun <E> State<out List<E>>.swap(i: Int, j: Int) {
     val list = value

@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.architecture.interfaces.Clone
 import com.baymax104.bookmanager20.architecture.interfaces.ObjectRange
+import com.baymax104.bookmanager20.util.toDateString
 import java.util.*
 
 /**
@@ -39,7 +40,6 @@ class History(
     override var start = 0
         set(value) {
             field = value
-            startDB = value
             notifyPropertyChanged(BR.type)
         }
 
@@ -47,7 +47,6 @@ class History(
     override var end = 0
         set(value) {
             field = value
-            endDB = value
             notifyPropertyChanged(BR.type)
         }
 
@@ -73,10 +72,20 @@ class History(
         }
 
     @ColumnInfo(name = "start")
-    var startDB = start
+    var startDB = 0
+        get() = start
+        set(value) {
+            field = value
+            start = value
+        }
 
     @ColumnInfo(name = "end")
-    var endDB = end
+    var endDB = 0
+        get() = end
+        set(value) {
+            field = value
+            end = value
+        }
 
     constructor() : this(Book())
 
@@ -125,7 +134,7 @@ class History(
     }
 
     override fun toString(): String {
-        return "History(id=$id, bookId=$bookId, updateTime=$updateTime, start=$start, end=$end, total=$total, duplicate=$duplicate)"
+        return "History(id=$id, bookId=$bookId, start=$start, end=$end, updateTime=${updateTime.toDateString()}, total=$total, duplicate=$duplicate)"
     }
 }
 

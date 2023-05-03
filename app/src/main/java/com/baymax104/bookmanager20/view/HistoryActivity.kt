@@ -12,8 +12,8 @@ import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityHistoryBinding
 import com.baymax104.bookmanager20.domain.HistoryMessenger
 import com.baymax104.bookmanager20.domain.HistoryRequester
+import com.baymax104.bookmanager20.domain.HistoryUnion
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.entity.History
 import com.baymax104.bookmanager20.util.showOnce
 import com.baymax104.bookmanager20.view.adapter.HistoryAdapter
 import com.blankj.utilcode.util.BarUtils
@@ -38,7 +38,7 @@ class HistoryActivity : BaseActivity() {
 
     class States : StateHolder() {
         val book = State(Book())
-        val histories = State(listOf<History>())
+        val union = HistoryUnion(listOf())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,16 +47,16 @@ class HistoryActivity : BaseActivity() {
         messenger.book.observeSend(this, sticky = true) { book ->
             states.book.value = book.clone()
             requester.queryBookHistory(states.book.value) {
-                success { states.histories.value = it }
+                success { states.union.historyValue = it }
                 fail { ToastUtils.showShort(it.message) }
             }
         }
 
         messenger.updateHistory.observeReply(this) { history ->
-            requester.insertHistory(history, states.histories.value) {
+            requester.insertHistory(history, states.union) {
                 success {
                     states.book.value.progress = it
-                    states.histories.add(history)
+                    states.union.historyState += history
                 }
                 fail { ToastUtils.showShort(it.message) }
             }

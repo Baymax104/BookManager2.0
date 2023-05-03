@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.baymax104.bookmanager20.BR
 import com.baymax104.bookmanager20.R
 import com.baymax104.bookmanager20.architecture.domain.*
+import com.baymax104.bookmanager20.architecture.interfaces.deepClone
 import com.baymax104.bookmanager20.architecture.view.BaseActivity
 import com.baymax104.bookmanager20.architecture.view.DataBindingConfig
 import com.baymax104.bookmanager20.databinding.ActivityEditBinding
 import com.baymax104.bookmanager20.domain.EditMessenger
 import com.baymax104.bookmanager20.domain.EditRequester
 import com.baymax104.bookmanager20.entity.Book
-import com.baymax104.bookmanager20.architecture.interfaces.deepClone
 import com.baymax104.bookmanager20.util.showSnackBar
 import com.baymax104.bookmanager20.view.adapter.EditAdapter
 import com.blankj.utilcode.util.ToastUtils
@@ -71,7 +71,7 @@ class EditActivity : BaseActivity() {
         adapter.onMoved = { i, j -> states.books.swap(i, j) }
         adapter.onSwiped = {
             states.books.remove(it.value)
-            states.stack.add(it)
+            states.stack += it
         }
 
         return DataBindingConfig(R.layout.activity_edit, BR.state, states)

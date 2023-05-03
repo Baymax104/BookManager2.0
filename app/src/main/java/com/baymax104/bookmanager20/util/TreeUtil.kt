@@ -1,7 +1,7 @@
 package com.baymax104.bookmanager20.util
 
 import com.baymax104.bookmanager20.architecture.interfaces.ObjectRange
-import java.util.LinkedList
+import java.util.*
 
 /**
  *@Description
@@ -15,6 +15,9 @@ abstract class TreeNode<T> {
     val children: LinkedList<Node<T>> = LinkedList()
 
     var index = -1
+
+    val hash: Int
+        get() = System.identityHashCode(this)
 
     operator fun get(i: Int) = children.getOrNull(i)
 
@@ -79,13 +82,22 @@ data class Node<T>(val value: T) : TreeNode<T>() {
     }
 }
 
+interface IntervalCallback<R : Comparable<R>> {
+    fun shrinkLeft(leftEnd: R): R
+    fun shrinkRight(rightStart: R): R
+    fun adjoin(left: R, right: R): Boolean
+}
+
 class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
-    val shrinkLeft: (leftEnd: R) -> R,
-    val shrinkRight: (rightStart: R) -> R,
-    val adjoin: (left: R, right: R) -> Boolean
+    val callback: IntervalCallback<R>
 ) {
 
-    val root: Root<T> = Root()
+    private val root: Root<T> = Root()
+
+    val first: List<T>
+        get() = root.children.asSequence()
+            .map { it.value }
+            .toList()
 
     // map parent node to its overlap child
     private val overlapMap: TreeMap<T> = HashMap()
@@ -93,7 +105,7 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
     // map existed node to its duplicate node
     private val duplicateMap: TreeMap<T> = HashMap()
 
-    fun create(list: List<T>) {
+    fun create(list: List<T>) = apply {
         list.forEach { this += it }
     }
 
@@ -101,44 +113,23 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
         val node = Node(value)
         val parent = find(value)
 
-        // check situation and store intervals
-        // previous and next must be only one
-        var left: Node<T>? = null
-        var right: Node<T>? = null
-        val covers: MutableList<Node<T>> = mutableListOf()
-        for (child in parent) {
-            when {
-                child.value leftOverlap node.value -> left = child
-                child.value rightOverlap node.value -> right = child
-                child.value in node.value -> covers += child
-            }
-        }
+        if (addParentDuplicate(parent, node)) return
+
+        val (left, right, covers) = checkChildCondition(parent, node)
 
         // check overlap
-        if (left != null && right != null && adjoin(left.value.end, right.value.start)) {
-            addOverlap(left, node)
-            return
+        if (addOverlap(left, right, node)) return
+
+        // shrink boundary
+        if (left != null) {
+            node.value.start = callback.shrinkLeft(left.value.end)
+        }
+        if (right != null) {
+            node.value.end = callback.shrinkRight(right.value.start)
         }
 
         // check duplicate
-        if (parent is Node && parent.value equal value) {
-            addDuplicate(parent, node)
-            return
-        }
-        if (covers.size == 1 && covers.first().value equal value) {
-            addDuplicate(covers.first(), node)
-            return
-        }
-
-        // shrink its left boundary
-        if (left != null) {
-            node.value.start = shrinkLeft(left.value.end)
-        }
-
-        // shrink its right boundary
-        if (right != null) {
-            node.value.end = shrinkRight(right.value.start)
-        }
+        if (addCoverDuplicate(covers, node)) return
 
         // attach overlap child to its children
         if (covers.isNotEmpty()) {
@@ -147,7 +138,7 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
             node += covers
         }
 
-        // confirm node's index and insert it orderly
+        // confirm node's index in order to insert it orderly
         if (left != null) {
             node.index = left.index + 1
         }
@@ -160,19 +151,15 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
     operator fun minusAssign(value: T) {
         val node = find(value)
 
-        // value does not exist in tree
-        if (node is Root || (node is Node && value inner node.value)) {
+        if (!assertNodeExistInTree(value, node)) {
             // search overlap and remove it, node is seen as parent
-            if (node.children.isNotEmpty() && overlapMap[node] != null) {
-                val overlap = overlapMap[node]!!.find { it.value equal value }
-                overlap?.let {
-                    it.parent = null
-                    overlapMap[node]!!.remove(it)
-                }
-                if (overlapMap[node]!!.isEmpty()) overlapMap -= node
-                if (overlap != null) return
+            val overlap = overlapMap[node.hash]!!.find { it.value equal value }
+            overlap?.let {
+                it.parent = null
+                overlapMap[node.hash]!!.remove(it)
             }
-            throw AssertionError("value does not exist in tree")
+            if (overlapMap[node.hash]!!.isEmpty()) overlapMap -= node.hash
+            if (overlap != null) return
         }
 
         node as Node
@@ -182,8 +169,8 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
         if (node.children.isEmpty()) {
 
             // if both overlap are null, remove it straightly
-            val rightOverlap = overlapMap[parent]!!.find { it.index == node.index }
-            val leftOverlap = overlapMap[parent]!!.find { it.index == node.index - 1 }
+            val rightOverlap = overlapMap[parent.hash]?.find { it.index == node.index }
+            val leftOverlap = overlapMap[parent.hash]?.find { it.index == node.index - 1 }
 
             // shrink node's boundary according to duplicated item
             val overlap = rightOverlap ?: leftOverlap
@@ -194,8 +181,8 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
                     node.value.end = overlap.value.end
                 }
                 overlap.parent = null
-                overlapMap[parent]!!.remove(overlap)
-                if (overlapMap[parent]!!.isEmpty()) overlapMap -= parent
+                overlapMap[parent.hash]!!.remove(overlap)
+                if (overlapMap[parent.hash]!!.isEmpty()) overlapMap -= parent.hash
                 return
             }
         }
@@ -203,7 +190,52 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
         // remove node, if node has children, let its children fill its interval
         parent -= node
         // delete node's duplicate list
-        duplicateMap -= node
+        duplicateMap -= node.hash
+    }
+
+    fun checkInFirst(value: T): Boolean {
+        val node = Node(value)
+        for (child in root) {
+            if (node.value equal child.value && node.value === child.value) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun clear() {
+        val current: TreeNode<T> = root
+        val queue: Queue<TreeNode<T>> = LinkedList()
+        queue.offer(current)
+        while (queue.isNotEmpty()) {
+            val node = queue.poll()!!
+            node.forEachChild { queue.offer(it.apply { parent = null }) }
+            node.children.clear()
+        }
+    }
+
+    fun overlapValues() =
+        overlapMap.asSequence()
+            .flatMap { it.value }
+            .map { it.value }
+            .toList()
+
+    fun duplicateValues() =
+        duplicateMap.asSequence()
+            .flatMap { it.value }
+            .map { it.value }
+            .toList()
+
+    private fun assertNodeExistInTree(value: T, node: TreeNode<T>): Boolean {
+        // node does not exist in tree, may exist in overlap map
+        if (node is Root || (node is Node && value inner node.value)) {
+            // node does not exist in overlap map, throw AssertionError
+            if (node.children.isEmpty() || overlapMap[node.hash] == null) {
+                throw AssertionError("value does not exist in tree or overlap map")
+            }
+            return false  // node exists in overlap map
+        }
+        return true  // node exists in tree
     }
 
     /**
@@ -226,28 +258,70 @@ class IntervalTree<R : Comparable<R>, T : ObjectRange<R>>(
                 }
             }
             // children are not empty, but it is not included in any child
-            if (!isContained) { break }
+            if (!isContained) {
+                break
+            }
         }
         return current
     }
 
-    private fun addOverlap(host: Node<T>, node: Node<T>) {
+    private fun checkChildCondition(
+        parent: TreeNode<T>,
+        node: Node<T>
+    ): Triple<Node<T>?, Node<T>?, List<Node<T>>> {
+        // previous and next must be only one
+        var left: Node<T>? = null
+        var right: Node<T>? = null
+        val covers: MutableList<Node<T>> = mutableListOf()
+        for (child in parent) {
+            when {
+                child.value leftOverlap node.value -> left = child
+                child.value rightOverlap node.value -> right = child
+                child.value in node.value -> covers += child
+            }
+        }
+        return Triple(left, right, covers)
+    }
+
+    private fun addOverlap(left: Node<T>?, right: Node<T>?, node: Node<T>): Boolean {
+        if (left != null && right != null && callback.adjoin(left.value.end, right.value.start)) {
+            addOverlapInternal(left, node)
+            return true
+        }
+        return false
+    }
+
+    private fun addParentDuplicate(parent: TreeNode<T>, node: Node<T>): Boolean {
+        if (parent is Node && parent.value equal node.value) {
+            addDuplicateInternal(parent, node)
+            return true
+        }
+        return false
+    }
+
+    private fun addCoverDuplicate(covers: List<Node<T>>, node: Node<T>): Boolean {
+        if (covers.size == 1 && covers.first().value equal node.value) {
+            addDuplicateInternal(covers.first(), node)
+            return true
+        }
+        return false
+    }
+
+    private fun addOverlapInternal(host: Node<T>, node: Node<T>) {
         val parent = host.parent!!
-        if (overlapMap[parent] == null) {
-            overlapMap[parent] = LinkedList()
+        if (overlapMap[parent.hash] == null) {
+            overlapMap[parent.hash] = LinkedList()
         }
         node.parent = parent
         node.index = host.index
-        overlapMap[parent]!!.add(node)
+        overlapMap[parent.hash]!!.add(node)
     }
 
-    private fun addDuplicate(host: Node<T>, node: Node<T>) {
-        if (duplicateMap[host] == null) {
-            duplicateMap[host] = LinkedList()
+    private fun addDuplicateInternal(host: Node<T>, node: Node<T>) {
+        if (duplicateMap[host.hash] == null) {
+            duplicateMap[host.hash] = LinkedList()
         }
-        duplicateMap[host]!!.add(node)
+        duplicateMap[host.hash]!!.add(node)
     }
-
-
 
 }
